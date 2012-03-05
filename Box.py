@@ -13,11 +13,11 @@ class Box(QTabWidget):
 
 		self.setMovable(True)
 
-		self.chekFile = CheckFile(self)
+		self.checkFile = CheckFile(self)
 		self.backUp = BackUp(self)
 		self.cleanUp = CleanUp(self)
 
-		self.addTab(self.chekFile, QIcon(), QString('File'))
+		self.addTab(self.checkFile, QIcon(), QString('File'))
 		self.setTabToolTip(0, 'Tab1')
 
 		self.addTab(self.backUp, QIcon(), QString('BackUp'))
@@ -27,7 +27,7 @@ class Box(QTabWidget):
 		self.setTabToolTip(2, 'Tab3')
 
 	def setTabsState(self, state):
-		self.chekFile.setState(state)
+		self.checkFile.setState(state)
 		self.backUp.setState(state)
 		self.cleanUp.setState(state)
 		self.Parent.stopProcess.setEnabled(not state)

@@ -8,7 +8,9 @@ class CheckFile(QWidget):
 	def __init__(self, parent = None):
 		QWidget.__init__(self, parent)
 		self.Parent = parent
-		
+		self.runned = False
+		self.pid = -1
+
 		self.layout = QGridLayout()
 
 		self.pathLayout = QHBoxLayout()
@@ -44,6 +46,7 @@ class CheckFile(QWidget):
 
 	def checkFile(self):
 		self.Parent.setTabsState(False)
+		self.runned = True
 		print self.pathString.text().toUtf8().data()
 		''' запустить поток и по сигналу включить закладки '''
 		QTimer.singleShot(5000, self.qwerty)
@@ -56,4 +59,6 @@ class CheckFile(QWidget):
 		self.checkSumm.setEnabled(state)
 
 	def qwerty(self):
+		self.runned = False
+		self.pid = -1
 		self.Parent.setTabsState(True)

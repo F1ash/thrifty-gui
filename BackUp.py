@@ -14,6 +14,8 @@ class BackUp(QWidget):
 	def __init__(self, parent = None):
 		QWidget.__init__(self, parent)
 		self.Parent = parent
+		self.runned = False
+		self.pid = -1
 
 		self.layout = QGridLayout()
 
@@ -41,14 +43,20 @@ class BackUp(QWidget):
 		self.progress.hide()
 		self.progress.setRange(0, 0)
 
+		self.logIn = QLabel('')
+		self.logIn.setToolTip('Log of processed task')
+		self.logIn.setOpenExternalLinks(True)
+
 		self.layout.addItem(self.buttonLayout, 0, 0)
 		self.layout.addWidget(self.progress, 0, 1)
+		self.layout.addWidget(self.logIn, 1, 0)
 
 		self.setLayout(self.layout)
 
 	def runBackUp(self):
 		self.Parent.setTabsState(False)
 		self.progress.show()
+		self.runned = True
 		mode = 0 if self.mode.currentIndex() else 1
 		speed = SPEED[str(self.speed.currentText())]
 		print 'BackUp running in %i mode and %i speed ...' % (mode, speed)
@@ -62,7 +70,11 @@ class BackUp(QWidget):
 		self.start.setEnabled(state)
 
 	def qwerty(self):
+		self.runned = False
+		self.pid = -1
 		self.Parent.setTabsState(True)
 		self.progress.hide()
+		pathToLog = '/tmp/11111' ## TODO : detect Log file name
+		self.logIn.setText('<a href="%s">Log in $TEMP<a>' % pathToLog)
 
 	def editExcludesFile(self): pass

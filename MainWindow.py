@@ -5,7 +5,9 @@ from PyQt4.QtCore import *
 from StatusBar import StatusBar
 from ListingText import ListingText
 from Box import Box
+import os
 
+## TODO : import from thrifty.py
 HELP = \
 	'Description:\n\
 	Utility for archiving or cleaning "rpmdb-out" files.\n\
@@ -83,11 +85,21 @@ class MainWindow(QMainWindow):
 	def detectRunningTask(self):
 		name = 'Unknown'
 		pid = -1
+		if self.menuTab.checkFile.runned :
+			pid = self.menuTab.checkFile.pid
+			name = 'CheckFile'
+		elif self.menuTab.backUp.runned :
+			pid = self.menuTab.backUp.pid
+			name = 'BackUp'
+		elif self.menuTab.cleanUp.runned :
+			pid = self.menuTab.cleanUp.pid
+			name = 'CleanUp'
 		return name, pid
 
 	def terminateRunningTask(self):
 		name, pid = self.detectRunningTask()
 		print 'Running Task : %s (pid %i)' % (name, pid)
+		# TODO : os.kill(pid, signal.SIGTERM)
 
 	def showMSG(self):
 		msg = ListingText(HELP, self)
