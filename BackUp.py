@@ -62,7 +62,7 @@ class BackUp(QWidget):
 		print 'BackUp running in %i mode and %i speed ...' % (mode, speed)
 		self.t = QProcess()
 		Data = QStringList()
-		Data.append(os.path.expanduser('~/thrifty/thrifty.py'))
+		Data.append('./thrifty.py')
 		Data.append('G:' + str(speed))
 		self.t.finished.connect(self.showResult)
 		if mode : self.t.start('python', Data)

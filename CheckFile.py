@@ -55,7 +55,7 @@ class CheckFile(QWidget):
 		print self.pathString.text().toUtf8().data()
 		self.t = QProcess()
 		Data = QStringList()
-		Data.append(os.path.expanduser('~/thrifty/thrifty.py'))
+		Data.append('./thrifty.py')
 		Data.append('G:-f')
 		Data.append(self.pathString.text())
 		self.t.finished.connect(self.showResult)
