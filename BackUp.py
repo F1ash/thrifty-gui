@@ -2,7 +2,6 @@
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
-from Wait import Wait
 import os.path
 
 SPEED = {
@@ -13,12 +12,10 @@ SPEED = {
 		}
 
 class BackUp(QWidget):
-	stop = pyqtSignal()
 	def __init__(self, parent = None):
 		QWidget.__init__(self, parent)
 		self.Parent = parent
 		self.runned = False
-		self.pid = -1
 
 		self.layout = QGridLayout()
 
@@ -55,7 +52,6 @@ class BackUp(QWidget):
 		self.layout.addWidget(self.logIn, 1, 0)
 
 		self.setLayout(self.layout)
-		self.stop.connect(self.showResult)
 
 	def runBackUp(self):
 		self.Parent.setTabsState(False)
@@ -64,15 +60,16 @@ class BackUp(QWidget):
 		mode = 0 if self.mode.currentIndex() else 1
 		speed = SPEED[str(self.speed.currentText())]
 		print 'BackUp running in %i mode and %i speed ...' % (mode, speed)
-		t = QProcess()
+		self.t = QProcess()
 		Data = QStringList()
-		Data.append('./thrifty.py')
+		Data.append(os.path.expanduser('~/thrifty/thrifty.py'))
 		Data.append('G:' + str(speed))
-		self.runned, self.pid = t.startDetached ('python', Data, os.path.expanduser('~/thrifty') ) #os.getcwd())
-		print [self.runned, self.pid]
-		if self.runned :
-			self.waitProcess = Wait(self.pid, self)
-			self.waitProcess.start()
+		self.t.finished.connect(self.showResult)
+		if mode : self.t.start('python', Data)
+		else : self.t.start('pkexec', Data)
+		if self.t.waitForStarted() :
+			self.runned = True
+			print self.t.state()
 		else :
 			self.showResult()
 
@@ -84,7 +81,6 @@ class BackUp(QWidget):
 
 	def showResult(self):
 		self.runned = False
-		self.pid = -1
 		self.Parent.setTabsState(True)
 		self.progress.hide()
 		name_ = '/dev/shm/thrifty.lastTask'

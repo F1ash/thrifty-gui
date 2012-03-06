@@ -2,16 +2,13 @@
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
-from Wait import Wait
-import os, stat, os.path
+import os, os.path
 
 class CleanUp(QWidget):
-	stop = pyqtSignal()
 	def __init__(self, parent = None):
 		QWidget.__init__(self, parent)
 		self.Parent = parent
 		self.runned = False
-		self.pid = -1
 
 		self.layout = QGridLayout()
 
@@ -53,7 +50,6 @@ class CleanUp(QWidget):
 		self.layout.addWidget(self.logIn, 1, 0)
 
 		self.setLayout(self.layout)
-		self.stop.connect(self.showResult)
 
 	def addDirPath(self):
 		_nameDir = QFileDialog.getExistingDirectory(self, 'Path_to_', '~', QFileDialog.ShowDirsOnly)
@@ -72,19 +68,22 @@ class CleanUp(QWidget):
 		self.progress.show()
 		self.runned = True
 		print 'ClenUp running  ...'
-		t = QProcess()
+		self.t = QProcess()
 		Data = QStringList()
-		#Data.append('/usr/bin/python')
-		Data.append('./thrifty.py')
+		Data.append('--user')
+		Data.append('root')
+		Data.append(os.path.expanduser('~/thrifty/thrifty.py'))
 		Data.append('G:-t')
 		for i in xrange(self.dirList.count()) :
 			item_ = self.dirList.item(i)
 			Data.append(item_.text())
-		self.runned, self.pid = t.startDetached ('/usr/bin/pkexec', Data, os.path.expanduser('~/thrifty') ) #os.getcwd())
-		print [self.runned, self.pid]
-		if self.runned :
-			self.waitProcess = Wait(self.pid, self)
-			self.waitProcess.start()
+		#for i in xrange(Data.count()) :
+		#	print Data[i],
+		self.t.finished.connect(self.showResult)
+		self.t.start('pkexec', Data)
+		if self.t.waitForStarted() :
+			self.runned = True
+			print self.t.state()
 		else :
 			self.showResult()
 
@@ -97,13 +96,13 @@ class CleanUp(QWidget):
 
 	def showResult(self):
 		self.runned = False
-		self.pid = -1
 		self.Parent.setTabsState(True)
 		self.progress.hide()
 		name_ = '/dev/shm/thrifty.lastTask'
 		if os.path.isfile(name_) :
 			with open(name_, 'rb') as f :
 				pathToLog = f.read()
+				f.close()
 			os.remove(name_)
 		else :
 			pathToLog = 'ERROR'

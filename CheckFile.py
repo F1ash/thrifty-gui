@@ -2,16 +2,13 @@
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
-from Wait import Wait
 import os, stat, os.path
 
 class CheckFile(QWidget):
-	stop = pyqtSignal()
 	def __init__(self, parent = None):
 		QWidget.__init__(self, parent)
 		self.Parent = parent
 		self.runned = False
-		self.pid = -1
 
 		self.layout = QGridLayout()
 
@@ -41,7 +38,6 @@ class CheckFile(QWidget):
 		self.layout.addWidget(self.checkSummRes, 5, 1)
 
 		self.setLayout(self.layout)
-		self.stop.connect(self.showResult)
 
 	def addPath(self):
 		fileName = QFileDialog.getOpenFileName(self, 'Path_to_', '~')
@@ -57,16 +53,16 @@ class CheckFile(QWidget):
 		self.Parent.setTabsState(False)
 		self.runned = True
 		print self.pathString.text().toUtf8().data()
-		t = QProcess()
+		self.t = QProcess()
 		Data = QStringList()
-		Data.append('./thrifty.py')
+		Data.append(os.path.expanduser('~/thrifty/thrifty.py'))
 		Data.append('G:-f')
 		Data.append(self.pathString.text())
-		self.runned, self.pid = t.startDetached ('python', Data, os.path.expanduser('~/thrifty') ) #os.getcwd())
-		print [self.runned, self.pid]
-		if self.runned :
-			self.waitProcess = Wait(self.pid, self)
-			self.waitProcess.start()
+		self.t.finished.connect(self.showResult)
+		self.t.start('python', Data)
+		if self.t.waitForStarted() :
+			self.runned = True
+			print self.t.state()
 		else :
 			self.showResult()
 
@@ -79,7 +75,6 @@ class CheckFile(QWidget):
 
 	def showResult(self):
 		self.runned = False
-		self.pid = -1
 		self.Parent.setTabsState(True)
 		name_ = '/dev/shm/thrifty.lastTask'
 		if os.path.isfile(name_) :
