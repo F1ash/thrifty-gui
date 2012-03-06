@@ -28,12 +28,11 @@ Thrifty GUI
 
 %install
 rm -rf $RPM_BUILD_ROOT
-mkdir -p $RPM_BUILD_ROOT/%{_datadir}/%{name}
-mkdir -p $RPM_BUILD_ROOT/%{_datadir}/%{name}/icons
+mkdir -p $RPM_BUILD_ROOT/%{_datadir}/thrifty/
+mkdir -p $RPM_BUILD_ROOT/%{_datadir}/thrifty/icons/
 install -D -m 755 -p %{name} $RPM_BUILD_ROOT/%{_bindir}/%{name}
-install -D -m 644 -p *.py $RPM_BUILD_ROOT/%{_datadir}/%{name}/*
-install -D -m 644 -p ./icons/* $RPM_BUILD_ROOT/%{_datadir}/%{name}/icons/*
-
+install -D -m 644 -p *.py $RPM_BUILD_ROOT/%{_datadir}/thrifty/
+install -D -m 644 -p icons/* $RPM_BUILD_ROOT/%{_datadir}/thrifty/icons/
 
 desktop-file-install --delete-original		\
 	--dir ${RPM_BUILD_ROOT}%{_datadir}/applications thrifty.desktop
@@ -42,16 +41,16 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/thrifty.desktop
 %files
 %defattr(-,root,root)
 %{_bindir}/%{name}
-%dir %{_datadir}/%{name}/icons
-%{_datadir}/%{name}/icons/*
-%{_datadir}/%{name}/BackUp.py
-%{_datadir}/%{name}/Box.py
-%{_datadir}/%{name}/CheckFile.py
-%{_datadir}/%{name}/CleanUp.py
-%{_datadir}/%{name}/ListingText.py
-%{_datadir}/%{name}/MainWindow.py
-%{_datadir}/%{name}/StatusBar.py
-%{_datadir}/%{name}/%{name}.py
+%dir %{_datadir}/thrifty/icons
+%{_datadir}/thrifty/icons/*
+%{_datadir}/thrifty/BackUp.py
+%{_datadir}/thrifty/Box.py
+%{_datadir}/thrifty/CheckFile.py
+%{_datadir}/thrifty/CleanUp.py
+%{_datadir}/thrifty/ListingText.py
+%{_datadir}/thrifty/MainWindow.py
+%{_datadir}/thrifty/StatusBar.py
+%{_datadir}/thrifty/%{name}.py
 %{_datadir}/applications/thrifty.desktop
 
 %clean
