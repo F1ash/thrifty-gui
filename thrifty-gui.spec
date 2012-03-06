@@ -33,6 +33,7 @@ mkdir -p $RPM_BUILD_ROOT/%{_datadir}/thrifty/icons/
 install -D -m 755 -p %{name} $RPM_BUILD_ROOT/%{_bindir}/%{name}
 install -D -m 644 -p *.py $RPM_BUILD_ROOT/%{_datadir}/thrifty/
 install -D -m 644 -p icons/* $RPM_BUILD_ROOT/%{_datadir}/thrifty/icons/
+install -D -m 644 -p icons/gas_soldier.png $RPM_BUILD_ROOT/%{_datadir}/pixmaps/thrifty.png
 
 desktop-file-install --delete-original		\
 	--dir ${RPM_BUILD_ROOT}%{_datadir}/applications thrifty.desktop
@@ -52,6 +53,7 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/thrifty.desktop
 %{_datadir}/thrifty/StatusBar.py*
 %{_datadir}/thrifty/%{name}.py*
 %{_datadir}/applications/thrifty.desktop
+%{_datadir}/pixmaps/thrifty.png
 
 %clean
 rm -rf $RPM_BUILD_ROOT

@@ -17,13 +17,13 @@ class Box(QTabWidget):
 		self.backUp = BackUp(self)
 		self.cleanUp = CleanUp(self)
 
-		self.addTab(self.checkFile, QIcon(), QString('File'))
+		self.addTab(self.checkFile, QIcon('/usr/share/thrifty/icons/weapon_01.png'), QString('File'))
 		self.setTabToolTip(0, 'Checks file belonging to a rpmdb')
 
-		self.addTab(self.backUp, QIcon(), QString('BackUp'))
+		self.addTab(self.backUp, QIcon('/usr/share/thrifty/icons/weapon_02.png'), QString('BackUp'))
 		self.setTabToolTip(1, 'Back up "rpmdb-out" files (User\Root Mode).')
 
-		self.addTab(self.cleanUp, QIcon(), QString('Clean'))
+		self.addTab(self.cleanUp, QIcon('/usr/share/thrifty/icons/weapon_03.png'), QString('Clean'))
 		self.setTabToolTip(2, 'Clean up "rpmdb-out" files (Root Mode only) or test.')
 
 	def setTabsState(self, state):

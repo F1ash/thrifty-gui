@@ -48,7 +48,7 @@ class MainWindow(QMainWindow):
 
 		#self.resize(450, 350)
 		self.setWindowTitle('Thrifty')
-		self.setWindowIcon(QIcon('./icons/thrifty.png'))
+		self.setWindowIcon(QIcon('/usr/share/thrifty/icons/sniper_soldier.png'))
 
 		self.exit_ = QAction(QIcon('./icons/exit.png'), '&Exit', self)
 		self.exit_.setShortcut('Ctrl+Q')

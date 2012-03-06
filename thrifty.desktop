@@ -2,7 +2,7 @@
 GenericName=Thrifty
 Exec=/usr/bin/thrifty-gui
 GenericName[ru]=Утилита для архивирования и очистки "не-пакетных" файлов
-Icon=warning
+Icon=thrifty
 Name=Thrifty
 NoDisplay=false
 Type=Application
