@@ -1,0 +1,15 @@
+[Desktop Entry]
+Encoding=UTF-8
+GenericName=Thrifty
+Exec=/usr/bin/thrifty-gui
+GenericName[ru]=Утилита для архивирования и очистки "не-пакетных" файлов
+Icon=warning
+Name=Thrifty
+NoDisplay=false
+Type=Application
+Categories=Utility;
+StartupNotify=true
+Terminal=0
+TerminalOptions=
+X-KDE-SubstituteUID=false
+X-KDE-Username=

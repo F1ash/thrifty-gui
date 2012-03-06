@@ -34,6 +34,11 @@ install -D -m 755 -p %{name} $RPM_BUILD_ROOT/%{_bindir}/%{name}
 install -D -m 644 -p *.py $RPM_BUILD_ROOT/%{_datadir}/%{name}/*
 install -D -m 644 -p ./icons/* $RPM_BUILD_ROOT/%{_datadir}/%{name}/icons/*
 
+
+desktop-file-install --delete-original		\
+	--dir ${RPM_BUILD_ROOT}%{_datadir}/applications thrifty.desktop
+desktop-file-validate %{buildroot}/%{_datadir}/applications/thrifty.desktop
+
 %files
 %defattr(-,root,root)
 %{_bindir}/%{name}
@@ -47,6 +52,7 @@ install -D -m 644 -p ./icons/* $RPM_BUILD_ROOT/%{_datadir}/%{name}/icons/*
 %{_datadir}/%{name}/MainWindow.py
 %{_datadir}/%{name}/StatusBar.py
 %{_datadir}/%{name}/%{name}.py
+%{_datadir}/applications/thrifty.desktop
 
 %clean
 rm -rf $RPM_BUILD_ROOT
