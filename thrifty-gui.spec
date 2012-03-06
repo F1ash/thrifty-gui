@@ -43,14 +43,14 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/thrifty.desktop
 %{_bindir}/%{name}
 %dir %{_datadir}/thrifty/icons
 %{_datadir}/thrifty/icons/*
-%{_datadir}/thrifty/BackUp.py
-%{_datadir}/thrifty/Box.py
-%{_datadir}/thrifty/CheckFile.py
-%{_datadir}/thrifty/CleanUp.py
-%{_datadir}/thrifty/ListingText.py
-%{_datadir}/thrifty/MainWindow.py
-%{_datadir}/thrifty/StatusBar.py
-%{_datadir}/thrifty/%{name}.py
+%{_datadir}/thrifty/BackUp.py*
+%{_datadir}/thrifty/Box.py*
+%{_datadir}/thrifty/CheckFile.py*
+%{_datadir}/thrifty/CleanUp.py*
+%{_datadir}/thrifty/ListingText.py*
+%{_datadir}/thrifty/MainWindow.py*
+%{_datadir}/thrifty/StatusBar.py*
+%{_datadir}/thrifty/%{name}.py*
 %{_datadir}/applications/thrifty.desktop
 
 %clean

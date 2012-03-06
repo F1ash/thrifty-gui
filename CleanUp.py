@@ -72,7 +72,7 @@ class CleanUp(QWidget):
 		Data = QStringList()
 		Data.append('--user')
 		Data.append('root')
-		Data.append('./thrifty.py')
+		Data.append('/usr/share/thrifty/thrifty.py')
 		Data.append('G:-t')
 		for i in xrange(self.dirList.count()) :
 			item_ = self.dirList.item(i)
