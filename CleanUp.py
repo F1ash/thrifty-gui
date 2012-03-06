@@ -2,9 +2,11 @@
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
+from Wait import Wait
 import os, stat, os.path
 
 class CleanUp(QWidget):
+	stop = pyqtSignal()
 	def __init__(self, parent = None):
 		QWidget.__init__(self, parent)
 		self.Parent = parent
@@ -51,6 +53,7 @@ class CleanUp(QWidget):
 		self.layout.addWidget(self.logIn, 1, 0)
 
 		self.setLayout(self.layout)
+		self.stop.connect(self.showResult)
 
 	def addDirPath(self):
 		_nameDir = QFileDialog.getExistingDirectory(self, 'Path_to_', '~', QFileDialog.ShowDirsOnly)
@@ -69,8 +72,21 @@ class CleanUp(QWidget):
 		self.progress.show()
 		self.runned = True
 		print 'ClenUp running  ...'
-		''' запустить поток и по сигналу включить закладки '''
-		QTimer.singleShot(5000, self.qwerty)
+		t = QProcess()
+		Data = QStringList()
+		#Data.append('/usr/bin/python')
+		Data.append('./thrifty.py')
+		Data.append('G:-t')
+		for i in xrange(self.dirList.count()) :
+			item_ = self.dirList.item(i)
+			Data.append(item_.text())
+		self.runned, self.pid = t.startDetached ('/usr/bin/pkexec', Data, os.path.expanduser('~/thrifty') ) #os.getcwd())
+		print [self.runned, self.pid]
+		if self.runned :
+			self.waitProcess = Wait(self.pid, self)
+			self.waitProcess.start()
+		else :
+			self.showResult()
 
 	def setState(self, state):
 		self.dirList.setEnabled(state)
@@ -79,12 +95,18 @@ class CleanUp(QWidget):
 		self.editTargets.setEnabled(state)
 		self.start.setEnabled(state)
 
-	def qwerty(self):
+	def showResult(self):
 		self.runned = False
 		self.pid = -1
 		self.Parent.setTabsState(True)
 		self.progress.hide()
-		pathToLog = '/tmp/11111'  ## TODO : detect Log file name
+		name_ = '/dev/shm/thrifty.lastTask'
+		if os.path.isfile(name_) :
+			with open(name_, 'rb') as f :
+				pathToLog = f.read()
+			os.remove(name_)
+		else :
+			pathToLog = 'ERROR'
 		self.logIn.setText('<a href="%s">Log in $TEMP<a>' % pathToLog)
 
 	def editTargetsFile(self): pass

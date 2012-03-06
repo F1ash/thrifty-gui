@@ -88,18 +88,21 @@ class MainWindow(QMainWindow):
 		if self.menuTab.checkFile.runned :
 			pid = self.menuTab.checkFile.pid
 			name = 'CheckFile'
+			obj = self.menuTab.checkFile
 		elif self.menuTab.backUp.runned :
 			pid = self.menuTab.backUp.pid
 			name = 'BackUp'
+			obj = self.menuTab.backUp
 		elif self.menuTab.cleanUp.runned :
 			pid = self.menuTab.cleanUp.pid
 			name = 'CleanUp'
-		return name, pid
+			obj = self.menuTab.cleanUp
+		return name, pid, obj
 
 	def terminateRunningTask(self):
-		name, pid = self.detectRunningTask()
+		name, pid, obj = self.detectRunningTask()
 		print 'Running Task : %s (pid %i)' % (name, pid)
-		# TODO : os.kill(pid, signal.SIGTERM)
+		obj.waitProcess.__del__()
 
 	def showMSG(self):
 		msg = ListingText(HELP, self)

@@ -2,9 +2,11 @@
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
+from Wait import Wait
 import os, stat, os.path
 
 class CheckFile(QWidget):
+	stop = pyqtSignal()
 	def __init__(self, parent = None):
 		QWidget.__init__(self, parent)
 		self.Parent = parent
@@ -28,11 +30,18 @@ class CheckFile(QWidget):
 		self.package = QLabel('Package :')
 		self.packageCheckSumm = QLabel('Package CheckSumm :')
 		self.checkSumm = QLabel('Real CheckSumm :')
+		self.packageRes = QLabel('')
+		self.packageCheckSummRes = QLabel('')
+		self.checkSummRes = QLabel('')
 		self.layout.addWidget(self.package, 3, 0)
 		self.layout.addWidget(self.packageCheckSumm, 4, 0)
 		self.layout.addWidget(self.checkSumm, 5, 0)
+		self.layout.addWidget(self.packageRes, 3, 1)
+		self.layout.addWidget(self.packageCheckSummRes, 4, 1)
+		self.layout.addWidget(self.checkSummRes, 5, 1)
 
 		self.setLayout(self.layout)
+		self.stop.connect(self.showResult)
 
 	def addPath(self):
 		fileName = QFileDialog.getOpenFileName(self, 'Path_to_', '~')
@@ -48,8 +57,18 @@ class CheckFile(QWidget):
 		self.Parent.setTabsState(False)
 		self.runned = True
 		print self.pathString.text().toUtf8().data()
-		''' запустить поток и по сигналу включить закладки '''
-		QTimer.singleShot(5000, self.qwerty)
+		t = QProcess()
+		Data = QStringList()
+		Data.append('./thrifty.py')
+		Data.append('G:-f')
+		Data.append(self.pathString.text())
+		self.runned, self.pid = t.startDetached ('python', Data, os.path.expanduser('~/thrifty') ) #os.getcwd())
+		print [self.runned, self.pid]
+		if self.runned :
+			self.waitProcess = Wait(self.pid, self)
+			self.waitProcess.start()
+		else :
+			self.showResult()
 
 	def setState(self, state):
 		self.pathString.setEnabled(state)
@@ -58,7 +77,20 @@ class CheckFile(QWidget):
 		self.packageCheckSumm.setEnabled(state)
 		self.checkSumm.setEnabled(state)
 
-	def qwerty(self):
+	def showResult(self):
 		self.runned = False
 		self.pid = -1
 		self.Parent.setTabsState(True)
+		name_ = '/dev/shm/thrifty.lastTask'
+		if os.path.isfile(name_) :
+			with open(name_, 'rb') as f :
+				_data = f.read()
+			os.remove(name_)
+			data = _data.split('\n')
+			self.packageRes.setText(data[0])
+			self.packageCheckSummRes.setText(data[1])
+			self.checkSummRes.setText(data[2])
+		else :
+			self.packageRes.setText('Error : not successfull.')
+			self.packageCheckSummRes.setText('--')
+			self.checkSummRes.setText('--')
