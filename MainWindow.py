@@ -42,6 +42,8 @@ HELP = \
 			-	help\n\
 	'
 
+STYLE = 'QIcon { height: 32px; width : 32px; }'
+
 class MainWindow(QMainWindow):
 	def __init__(self, parent = None):
 		QMainWindow.__init__(self, parent)
@@ -50,16 +52,16 @@ class MainWindow(QMainWindow):
 		self.setWindowTitle('Thrifty')
 		self.setWindowIcon(QIcon('/usr/share/thrifty/icons/sniper_soldier.png'))
 
-		self.exit_ = QAction(QIcon('./icons/exit.png'), '&Exit', self)
+		self.exit_ = QAction(QIcon('/usr/share/thrifty/icons/exit.png'), '&Exit', self)
 		self.exit_.setShortcut('Ctrl+Q')
 		self.exit_.setStatusTip('Exit application')
 		self.connect(self.exit_, SIGNAL('triggered()'), self._close)
 
-		listHelp = QAction(QIcon('./icons/help.png'),'&About Thrifty', self)
+		listHelp = QAction(QIcon('/usr/share/thrifty/icons/help.png'),'&About Thrifty', self)
 		listHelp.setStatusTip('Read help')
 		self.connect(listHelp, SIGNAL('triggered()'), self.showMSG)
 
-		self.stopProcess = QAction(QIcon('./icons/help.png'),'&Terminate Task', self)
+		self.stopProcess = QAction(QIcon('/usr/share/thrifty/icons/terminate.png'),'&Terminate Task', self)
 		self.stopProcess.setShortcut('Ctrl+T')
 		self.stopProcess.setStatusTip('Terminate running task ...')
 		self.stopProcess.setEnabled(False)
@@ -81,6 +83,7 @@ class MainWindow(QMainWindow):
 
 		self.menuTab = Box(self)
 		self.setCentralWidget(self.menuTab)
+		self.setStyleSheet(STYLE)
 
 	def detectRunningTask(self):
 		name = 'Unknown'

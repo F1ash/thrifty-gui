@@ -12,19 +12,20 @@ class Box(QTabWidget):
 		self.Parent = parent
 
 		self.setMovable(True)
+		self.setIconSize(QSize(32,32))
 
 		self.checkFile = CheckFile(self)
 		self.backUp = BackUp(self)
 		self.cleanUp = CleanUp(self)
 
-		self.addTab(self.checkFile, QIcon('/usr/share/thrifty/icons/weapon_01.png'), QString('File'))
+		self.addTab(self.checkFile, QIcon('/usr/share/thrifty/icons/file.png'), QString('File'))
 		self.setTabToolTip(0, 'Checks file belonging to a rpmdb')
 
-		self.addTab(self.backUp, QIcon('/usr/share/thrifty/icons/weapon_02.png'), QString('BackUp'))
-		self.setTabToolTip(1, 'Back up "rpmdb-out" files (User\Root Mode).')
+		self.addTab(self.backUp, QIcon('/usr/share/thrifty/icons/backup.png'), QString('BackUp'))
+		self.setTabToolTip(1, 'Back up "rpmdb-out" files <b>(User\Root Mode)</b>.')
 
-		self.addTab(self.cleanUp, QIcon('/usr/share/thrifty/icons/weapon_03.png'), QString('Clean'))
-		self.setTabToolTip(2, 'Clean up "rpmdb-out" files (Root Mode only) or test.')
+		self.addTab(self.cleanUp, QIcon('/usr/share/thrifty/icons/cleanup.png'), QString('Clean'))
+		self.setTabToolTip(2, 'Clean up "rpmdb-out" files <b>(Root Mode only)</b> or test.')
 
 	def setTabsState(self, state):
 		self.checkFile.setState(state)

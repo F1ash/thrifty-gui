@@ -1,5 +1,5 @@
 Name: thrifty-gui
-Version: 0.10
+Version: 0.15
 Release: 1%{?dist}
 Summary: Utility for archiving or cleaning "rpmdb-out" files
 Summary(ru): Утилита для архивирования и очистки "не-пакетных" файлов
@@ -59,6 +59,9 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/thrifty.desktop
 rm -rf $RPM_BUILD_ROOT
 
 %changelog
+
+* Tue Mar 07 2012 Fl@sh <kaperang07@gmail.com> - 0.15-1
+- version updated
 
 * Tue Mar 06 2012 Fl@sh <kaperang07@gmail.com> - 0.10-1
 - Initial build

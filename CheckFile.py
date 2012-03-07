@@ -16,7 +16,9 @@ class CheckFile(QWidget):
 
 		self.pathString = QLineEdit('')
 		self.pathString.returnPressed.connect(self.checkFile)
-		self.searchPath = QPushButton()
+		self.searchPath = QPushButton(QIcon('/usr/share/thrifty/icons/file.png'), '')
+		self.searchPath.setIconSize(QSize(32,32))
+		self.searchPath.setToolTip('Path to file')
 		self.searchPath.clicked.connect(self.addPath)
 
 		self.pathLayout.addWidget(self.pathString)
@@ -38,6 +40,7 @@ class CheckFile(QWidget):
 		self.layout.addWidget(self.checkSummRes, 5, 1)
 
 		self.setLayout(self.layout)
+		self.setMinimumSize(32, 32)
 
 	def addPath(self):
 		fileName = QFileDialog.getOpenFileName(self, 'Path_to_', '~')

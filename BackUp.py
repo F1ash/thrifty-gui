@@ -11,6 +11,18 @@ SPEED = {
 		'Fast+'		: 3
 		}
 
+USER_DESCRIPTION = \
+'<pre><font color=green><b>UserMode</b></font> backs up own $HOME only\
+<pre>\twithout Excludes path.'
+ROOT_DESCRIPTION = \
+'<pre><font color=red><b>RootMode</b></font> backs up catalogs:\
+<pre>\t/usr/local\
+<pre>\t/var/named/chroot\
+<pre>\t/etc\
+<pre>\t&lt;all real $HOMEs in system&gt;\
+<pre>\twithout Excludes path.\
+'
+
 class BackUp(QWidget):
 	def __init__(self, parent = None):
 		QWidget.__init__(self, parent)
@@ -18,18 +30,30 @@ class BackUp(QWidget):
 		self.runned = False
 
 		self.layout = QGridLayout()
+		self.layout.setAlignment(Qt.AlignLeft)
 
 		self.buttonLayout = QVBoxLayout()
+		self.buttonLayout.setAlignment(Qt.AlignCenter)
 		self.mode = QComboBox()
+		self.mode.setIconSize(QSize(32,32))
 		self.mode.setToolTip('Mode of task')
 		self.mode.addItems(QStringList() << 'User' << 'Root')
+		self.mode.setItemIcon (0, QIcon('/usr/share/thrifty/icons/user.png'))
+		self.mode.setItemIcon (1, QIcon('/usr/share/thrifty/icons/admin.png'))
 		self.speed = QComboBox()
+		self.speed.setIconSize(QSize(32,32))
 		self.speed.addItems(QStringList() << 'Slow' << 'Normal' << 'Fast' << 'Fast+')
+		self.speed.setItemIcon (0, QIcon('/usr/share/thrifty/icons/slow.png'))
+		self.speed.setItemIcon (1, QIcon('/usr/share/thrifty/icons/normal.png'))
+		self.speed.setItemIcon (2, QIcon('/usr/share/thrifty/icons/fast.png'))
+		self.speed.setItemIcon (3, QIcon('/usr/share/thrifty/icons/fast+.png'))
 		self.speed.setToolTip('Speed of task execution')
-		self.editExcludes = QPushButton()
+		self.editExcludes = QPushButton(QIcon('/usr/share/thrifty/icons/edit.png'), '')
+		self.editExcludes.setIconSize(QSize(32,32))
 		self.editExcludes.setToolTip('Edit Excludes file for current regime')
 		self.editExcludes.clicked.connect(self.editExcludesFile)
-		self.start = QPushButton()
+		self.start = QPushButton(QIcon('/usr/share/thrifty/icons/start.png'), '')
+		self.start.setIconSize(QSize(32,32))
 		self.start.clicked.connect(self.runBackUp)
 		self.start.setToolTip('Start task')
 
@@ -37,6 +61,9 @@ class BackUp(QWidget):
 		self.buttonLayout.addWidget(self.speed)
 		self.buttonLayout.addWidget(self.editExcludes)
 		self.buttonLayout.addWidget(self.start)
+
+		self.descriptionTask = QLabel(USER_DESCRIPTION)
+		self.descriptionTask.setAlignment(Qt.AlignLeft)
 
 		self.progress = QProgressBar()
 		self.progress.setOrientation(Qt.Vertical)
@@ -49,9 +76,19 @@ class BackUp(QWidget):
 
 		self.layout.addItem(self.buttonLayout, 0, 0)
 		self.layout.addWidget(self.progress, 0, 1)
+		self.layout.addWidget(self.descriptionTask, 0, 2)
 		self.layout.addWidget(self.logIn, 1, 0)
 
 		self.setLayout(self.layout)
+		self.mode.currentIndexChanged.connect(self.changeContent)
+
+	def changeContent(self, i = 0):
+		if i :
+			self.descriptionTask.setText(ROOT_DESCRIPTION)
+			self.editExcludes.setToolTip('Edit Excludes file for <font color=red><b>ROOT</b></font> mode')
+		else :
+			self.descriptionTask.setText(USER_DESCRIPTION)
+			self.editExcludes.setToolTip('Edit Excludes file for <font color=green><b>USER</b></font> mode')
 
 	def runBackUp(self):
 		self.Parent.setTabsState(False)
