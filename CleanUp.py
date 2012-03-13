@@ -2,6 +2,8 @@
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
+from Editor import Editor
+from Functions import USER_UID, USER_GID
 import os, os.path
 
 class CleanUp(QWidget):
@@ -27,10 +29,10 @@ class CleanUp(QWidget):
 		self.editTargets.setIconSize(QSize(32,32))
 		self.mode = QComboBox()
 		self.mode.setIconSize(QSize(32,32))
-		self.mode.setToolTip('Mode of task')
-		self.mode.addItems(QStringList() << 'Test' << 'Clean')
-		self.mode.setItemIcon (0, QIcon('/usr/share/thrifty/icons/test.png'))
-		self.mode.setItemIcon (1, QIcon('/usr/share/thrifty/icons/cleanup.png'))
+		self.mode.setToolTip('Test')
+		#self.mode.addItems(QStringList() << 'Test' << 'Clean')
+		self.mode.addItem (QIcon('/usr/share/thrifty/icons/test.png'), '')
+		self.mode.addItem (QIcon('/usr/share/thrifty/icons/cleanup.png'), '')
 		self.start = QPushButton(QIcon('/usr/share/thrifty/icons/start.png'), '')
 		self.start.setIconSize(QSize(32,32))
 		self.addPath.setToolTip('Add to List')
@@ -63,6 +65,7 @@ class CleanUp(QWidget):
 		self.layout.addWidget(self.logIn, 1, 0)
 
 		self.setLayout(self.layout)
+		self.mode.currentIndexChanged.connect(self.changeModeContent)
 
 	def addDirPath(self):
 		_nameDir = QFileDialog.getExistingDirectory(self, 'Path_to_', '~', QFileDialog.ShowDirsOnly)
@@ -76,6 +79,12 @@ class CleanUp(QWidget):
 	def delDirPath(self):
 		item = self.dirList.takeItem(self.dirList.currentRow())
 
+	def changeModeContent(self, i = 0):
+		if i :
+			self.mode.setToolTip('Clean')
+		else :
+			self.mode.setToolTip('Test')
+
 	def runCleanUp(self):
 		self.Parent.setTabsState(False)
 		self.progress.show()
@@ -86,7 +95,9 @@ class CleanUp(QWidget):
 		Data.append('--user')
 		Data.append('root')
 		Data.append('/usr/share/thrifty/thrifty.py')
-		Data.append('G:-c' if self.mode.currentIndex() else 'G:-t')
+		mode = '-c' if self.mode.currentIndex() else '-t'
+		opt = ''.join(('G:', str(USER_UID), '/', str(USER_GID), '::', mode))
+		Data.append(opt)
 		for i in xrange(self.dirList.count()) :
 			item_ = self.dirList.item(i)
 			Data.append(item_.text())
@@ -104,6 +115,7 @@ class CleanUp(QWidget):
 		self.dirList.setEnabled(state)
 		self.addPath.setEnabled(state)
 		self.delPath.setEnabled(state)
+		self.mode.setEnabled(state)
 		self.editTargets.setEnabled(state)
 		self.start.setEnabled(state)
 
@@ -114,11 +126,20 @@ class CleanUp(QWidget):
 		name_ = '/dev/shm/thrifty.lastTask'
 		if os.path.isfile(name_) :
 			with open(name_, 'rb') as f :
-				pathToLog = f.read()
-				f.close()
+				pathToLog_ = f.read()
 			os.remove(name_)
 		else :
-			pathToLog = 'ERROR'
-		self.logIn.setText('<a href="%s">Log in $TEMP<a>' % pathToLog)
+			pathToLog_ = 'ERROR'
+		pathToLog = pathToLog_.split('\n')
+		self.logIn.setText('Removed %s files; Released %s Byte(s)' % \
+						   ('0' if len(pathToLog) < 2 else pathToLog[1], \
+						   '0' if len(pathToLog) < 3 else pathToLog[2]) + \
+						   '; <a href="%s">Log in $TEMP<a>' % pathToLog[0] + '</a>')
 
-	def editTargetsFile(self): pass
+	def editTargetsFile(self):
+		self.editTargets.setEnabled(False)
+		self.editor = Editor('/etc/thrifty.targets', 0, self)
+		self.editor.show()
+
+	def enableEditorButton(self):
+		self.editTargets.setEnabled(True)

@@ -2,14 +2,11 @@
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
+from Editor import Editor
+from Functions import USER_UID, USER_GID
 import os.path
 
-SPEED = {
-		'Slow'		: 2,
-		'Normal'	: 1,
-		'Fast'		: 0,
-		'Fast+'		: 3
-		}
+SPEED = {0	: 2, 1	: 1, 2	: 0, 3	: 3}
 
 USER_DESCRIPTION = \
 '<pre><font color=green><b>UserMode</b></font> backs up own $HOME only\
@@ -36,18 +33,18 @@ class BackUp(QWidget):
 		self.buttonLayout.setAlignment(Qt.AlignCenter)
 		self.mode = QComboBox()
 		self.mode.setIconSize(QSize(32,32))
-		self.mode.setToolTip('Mode of task')
-		self.mode.addItems(QStringList() << 'User' << 'Root')
-		self.mode.setItemIcon (0, QIcon('/usr/share/thrifty/icons/user.png'))
-		self.mode.setItemIcon (1, QIcon('/usr/share/thrifty/icons/admin.png'))
+		#self.mode.addItems(QStringList() << 'User' << 'Root')
+		self.mode.addItem (QIcon('/usr/share/thrifty/icons/user.png'), '')
+		self.mode.addItem (QIcon('/usr/share/thrifty/icons/admin.png'), '')
+		self.mode.setToolTip('User Mode')
 		self.speed = QComboBox()
 		self.speed.setIconSize(QSize(32,32))
-		self.speed.addItems(QStringList() << 'Slow' << 'Normal' << 'Fast' << 'Fast+')
-		self.speed.setItemIcon (0, QIcon('/usr/share/thrifty/icons/slow.png'))
-		self.speed.setItemIcon (1, QIcon('/usr/share/thrifty/icons/normal.png'))
-		self.speed.setItemIcon (2, QIcon('/usr/share/thrifty/icons/fast.png'))
-		self.speed.setItemIcon (3, QIcon('/usr/share/thrifty/icons/fast+.png'))
-		self.speed.setToolTip('Speed of task execution')
+		#self.speed.addItems(QStringList() << 'Slow' << 'Normal' << 'Fast' << 'Fast+')
+		self.speed.addItem (QIcon('/usr/share/thrifty/icons/slow.png'), '')
+		self.speed.addItem (QIcon('/usr/share/thrifty/icons/normal.png'), '')
+		self.speed.addItem (QIcon('/usr/share/thrifty/icons/fast.png'), '')
+		self.speed.addItem (QIcon('/usr/share/thrifty/icons/fast+.png'), '')
+		self.speed.setToolTip('Slow')
 		self.editExcludes = QPushButton(QIcon('/usr/share/thrifty/icons/edit.png'), '')
 		self.editExcludes.setIconSize(QSize(32,32))
 		self.editExcludes.setToolTip('Edit Excludes file for current regime')
@@ -80,27 +77,41 @@ class BackUp(QWidget):
 		self.layout.addWidget(self.logIn, 1, 0)
 
 		self.setLayout(self.layout)
-		self.mode.currentIndexChanged.connect(self.changeContent)
+		self.mode.currentIndexChanged.connect(self.changeModeContent)
+		self.speed.currentIndexChanged.connect(self.changeSpeedContent)
 
-	def changeContent(self, i = 0):
+	def changeModeContent(self, i = 0):
 		if i :
+			self.mode.setToolTip('Root Mode')
 			self.descriptionTask.setText(ROOT_DESCRIPTION)
 			self.editExcludes.setToolTip('Edit Excludes file for <font color=red><b>ROOT</b></font> mode')
 		else :
+			self.mode.setToolTip('User Mode')
 			self.descriptionTask.setText(USER_DESCRIPTION)
 			self.editExcludes.setToolTip('Edit Excludes file for <font color=green><b>USER</b></font> mode')
+
+	def changeSpeedContent(self, i = 0):
+		if i == 3 :
+			self.speed.setToolTip('Fast+')
+		elif i == 2 :
+			self.speed.setToolTip('Fast')
+		elif i == 1 :
+			self.speed.setToolTip('Normal')
+		else :
+			self.speed.setToolTip('Slow')
 
 	def runBackUp(self):
 		self.Parent.setTabsState(False)
 		self.progress.show()
 		self.runned = True
 		mode = 0 if self.mode.currentIndex() else 1
-		speed = SPEED[str(self.speed.currentText())]
+		speed = SPEED[self.speed.currentIndex()]
 		print 'BackUp running in %i mode and %i speed ...' % (mode, speed)
 		self.t = QProcess()
 		Data = QStringList()
 		Data.append('/usr/share/thrifty/thrifty.py')
-		Data.append('G:' + str(speed))
+		opt = ''.join(('G:', str(USER_UID), '/', str(USER_GID), '::', str(speed)))
+		Data.append(opt)
 		self.t.finished.connect(self.showResult)
 		if mode : self.t.start('python', Data)
 		else : self.t.start('pkexec', Data)
@@ -129,4 +140,15 @@ class BackUp(QWidget):
 			pathToLog = 'ERROR'
 		self.logIn.setText('<a href="%s">Log in $TEMP<a>' % pathToLog)
 
-	def editExcludesFile(self): pass
+	def editExcludesFile(self):
+		self.editExcludes.setEnabled(False)
+		mode = 0 if self.mode.currentIndex() else 1
+		if mode :
+			path_ = os.path.expanduser('~/.config/thrifty/thrifty.excludes')
+		else :
+			path_ = '/etc/thrifty.excludes'
+		self.editor = Editor(path_, mode, self)
+		self.editor.show()
+
+	def enableEditorButton(self):
+		self.editExcludes.setEnabled(True)

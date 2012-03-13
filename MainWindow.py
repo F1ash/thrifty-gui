@@ -103,8 +103,8 @@ class MainWindow(QMainWindow):
 		print 'Terminated Task : %s' % name
 		obj.t.terminate()
 
-	def showMSG(self):
-		msg = ListingText(HELP, self)
+	def showMSG(self, s = ''):
+		msg = ListingText(HELP if s=='' else s, self)
 		msg.exec_()
 
 	def _close(self): self.close()

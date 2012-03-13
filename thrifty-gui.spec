@@ -1,5 +1,5 @@
 Name: thrifty-gui
-Version: 0.15
+Version: 0.20
 Release: 1%{?dist}
 Summary: Utility for archiving or cleaning "rpmdb-out" files
 Summary(ru): Утилита для архивирования и очистки "не-пакетных" файлов
@@ -50,7 +50,9 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/thrifty.desktop
 %{_datadir}/thrifty/CleanUp.py*
 %{_datadir}/thrifty/ListingText.py*
 %{_datadir}/thrifty/MainWindow.py*
+%{_datadir}/thrifty/Editor.py*
 %{_datadir}/thrifty/StatusBar.py*
+%{_datadir}/thrifty/saveHelper.py*
 %{_datadir}/thrifty/%{name}.py*
 %{_datadir}/applications/thrifty.desktop
 %{_datadir}/pixmaps/thrifty.png
@@ -59,6 +61,9 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/thrifty.desktop
 rm -rf $RPM_BUILD_ROOT
 
 %changelog
+
+* Tue Mar 13 2012 Fl@sh <kaperang07@gmail.com> - 0.20-1
+- version updated
 
 * Tue Mar 07 2012 Fl@sh <kaperang07@gmail.com> - 0.15-1
 - version updated

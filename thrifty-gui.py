@@ -13,7 +13,7 @@ splash.show()
 app.processEvents()
 main = MainWindow()
 main.show()
-for i in xrange(700) :
+for i in xrange(100) :
 	splash.showMessage("", QtCore.Qt.AlignCenter, QtCore.Qt.yellow)
 	app.processEvents()
 splash.finish(main)

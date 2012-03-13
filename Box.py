@@ -24,7 +24,7 @@ class Box(QTabWidget):
 		self.addTab(self.backUp, QIcon('/usr/share/thrifty/icons/backup.png'), QString('BackUp'))
 		self.setTabToolTip(1, 'Back up "rpmdb-out" files <b>(User\Root Mode)</b>.')
 
-		self.addTab(self.cleanUp, QIcon('/usr/share/thrifty/icons/cleanup.png'), QString('Clean'))
+		self.addTab(self.cleanUp, QIcon('/usr/share/thrifty/icons/cleanup.png'), QString('CleanUp'))
 		self.setTabToolTip(2, 'Clean up "rpmdb-out" files <b>(Root Mode only)</b> or test.')
 
 	def setTabsState(self, state):
