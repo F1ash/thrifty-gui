@@ -52,6 +52,7 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/thrifty.desktop
 %{_datadir}/thrifty/MainWindow.py*
 %{_datadir}/thrifty/Editor.py*
 %{_datadir}/thrifty/StatusBar.py*
+%{_datadir}/thrifty/BrokenSearch.py*
 %{_datadir}/thrifty/saveHelper.py*
 %{_datadir}/thrifty/%{name}.py*
 %{_datadir}/applications/thrifty.desktop

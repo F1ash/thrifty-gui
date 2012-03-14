@@ -7,7 +7,7 @@ from Functions import randomString, readFile, USER_UID, USER_GID
 import os, os.path
 
 class Editor(QMainWindow):
-	def __init__(self, path = '', mode = 1, parent = None):
+	def __init__(self, path = '', mode = 1, parent = None, task = None):
 		QMainWindow.__init__(self, parent)
 
 		#self.resize(450, 350)
@@ -24,11 +24,24 @@ class Editor(QMainWindow):
 		self.exit_.setStatusTip('Exit application')
 		self.connect(self.exit_, SIGNAL('triggered()'), self._close)
 
+		self.giveToPk = QAction(QIcon('/usr/share/thrifty/icons/exit.png'), '&to PKit', self)
+		self.giveToPk.setShortcut('Ctrl+P')
+		self.giveToPk.setStatusTip('Give package list to PackageKit for reinstall')
+		self.connect(self.giveToPk, SIGNAL('triggered()'), self.runPKit)
+		self.giveToPk.setEnabled(False)
+
 		menubar = self.menuBar()
 
 		file_ = menubar.addMenu('&File')
 		file_.addAction(self.save_)
 		file_.addAction(self.exit_)
+
+		toPK_ = menubar.addMenu('&Action')
+		toPK_.addAction(self.giveToPk)
+
+		if task is not None :
+			self.save_.setEnabled(False)
+			if task : self.giveToPk.setEnabled(True)
 
 		self.editor = QTextEdit(parent = self)
 		self.setCentralWidget(self.editor)
@@ -42,10 +55,28 @@ class Editor(QMainWindow):
 		self.editor.setUndoRedoEnabled(True)
 		self.editor.setOverwriteMode(True)
 		self.editor.createStandardContextMenu()
-		s = readFile(self.path)
+		if task is None :
+			s = readFile(self.path)
+		else : 
+			s_ = readFile(self.path)
+			if self.path == '' :
+				s = s_
+			else :
+				l = []
+				for item in s_.split('\n') :
+					chunks = item.split(' ')
+					if len(chunks) >= task + 1 :
+						if chunks[task] != '' and chunks[task] not in l:
+							l.append(chunks[task])
+				s = ''.join([s_ + '\n' for s_ in l])
 		#print [s, QString().fromUtf8(s)]
 		self.editor.setPlainText(QString().fromUtf8(s))
 		self.statusBar.showMessage('Edit : ' + self.path)
+
+	def runPKit(self):
+		packageList = self.editor.toPlainText()
+		for item in packageList.split('\n') :
+			if item != '' : print [item]
 
 	def _save(self):
 		text = self.editor.toPlainText()

@@ -5,42 +5,8 @@ from PyQt4.QtCore import *
 from StatusBar import StatusBar
 from ListingText import ListingText
 from Box import Box
+from thrifty import HELP
 import os
-
-## TODO : import from thrifty.py
-HELP = \
-	'Description:\n\
-	Utility for archiving or cleaning "rpmdb-out" files.\n\
-	\n\
-	thrifty [option]\n\
-		0	-	very fast, ~200MB memory\n\
-		1	-	fast, ~150MB memory\n\
-		2	-	very slow, ~100MB memory\n\
-		3	-	super fast, ~200MB !\n\
-			This action backs up "rpmdb-out" or brocken (file in rpmdb,\n\
-			but checksum mismatched) files from own HOME only (user mode)\n\
-			or /etc, /var/named/chroot, /usr/local, <all real HOME> (root mode).\n\
-			Excludes specified in\n\
-				/etc/thrifty.excludes (common)\n\
-				~/.config/thrifty/thrifty.excludes (for HOME only)\n\
-		-c (--clean) [dir0 dir1 .. dirN]\n\
-			-	delete all (NOTE THIS!) "rpmdb-out" files from [dir0 dir1 .. dirN]\n\
-			This means that you can remove a lot of icons, settings, etc files.\n\
-			It`s a hard way (root mode only).\n\
-			Targets specified in\n\
-				/etc/thrifty.targets\n\
-			If specified then the utility will be delete "rpmdb-out" files which contain\n\
-			in path "target" string only, else -- delete all "rpmdb-out" files.\n\
-		-t (--test) [dir0 dir1 .. dirN]\n\
-			-	like --clean , but without removing files.\n\
-			This action can be used to obtain the list of all "rpmdb-out" files.\n\
-			And after editing it can be recorded in the /etc/thrifty.targets\n\
-			for precise removal of files.\n\
-		-f (--file) file\n\
-			-	check the file (abspath) provided by some package and brocken\n\
-		-h (--help)\n\
-			-	help\n\
-	'
 
 STYLE = 'QIcon { height: 32px; width : 32px; }'
 
@@ -96,6 +62,9 @@ class MainWindow(QMainWindow):
 		elif self.menuTab.cleanUp.runned :
 			name = 'CleanUp'
 			obj = self.menuTab.cleanUp
+		elif self.menuTab.broken.runned :
+			name = 'Search Broken'
+			obj = self.menuTab.broken
 		return name, obj
 
 	def terminateRunningTask(self):
