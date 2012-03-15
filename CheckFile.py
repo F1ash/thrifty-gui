@@ -66,7 +66,7 @@ class CheckFile(QWidget):
 		self.t.start('python', Data)
 		if self.t.waitForStarted() :
 			self.runned = True
-			print self.t.state()
+			#print self.t.state()
 		else :
 			self.showResult()
 

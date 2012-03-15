@@ -117,7 +117,7 @@ class BackUp(QWidget):
 		else : self.t.start('pkexec', Data)
 		if self.t.waitForStarted() :
 			self.runned = True
-			print self.t.state()
+			#print self.t.state()
 		else :
 			self.showResult()
 
@@ -126,6 +126,7 @@ class BackUp(QWidget):
 		self.speed.setEnabled(state)
 		self.editExcludes.setEnabled(state)
 		self.start.setEnabled(state)
+		self.descriptionTask.setEnabled(state)
 
 	def showResult(self):
 		self.runned = False
@@ -141,7 +142,7 @@ class BackUp(QWidget):
 		self.logIn.setText('<a href="%s">Log in $TEMP<a>' % pathToLog)
 
 	def editExcludesFile(self):
-		self.editExcludes.setEnabled(False)
+		self.Parent.setTabsState(False)
 		mode = 0 if self.mode.currentIndex() else 1
 		if mode :
 			path_ = os.path.expanduser('~/.config/thrifty/thrifty.excludes')
@@ -151,4 +152,4 @@ class BackUp(QWidget):
 		self.editor.show()
 
 	def enableEditorButton(self):
-		self.editExcludes.setEnabled(True)
+		self.Parent.setTabsState(True)

@@ -107,7 +107,7 @@ class CleanUp(QWidget):
 		self.t.start('pkexec', Data)
 		if self.t.waitForStarted() :
 			self.runned = True
-			print self.t.state()
+			#print self.t.state()
 		else :
 			self.showResult()
 
@@ -137,9 +137,9 @@ class CleanUp(QWidget):
 						   '; <a href="%s">Log in $TEMP<a>' % pathToLog[0] + '</a>')
 
 	def editTargetsFile(self):
-		self.editTargets.setEnabled(False)
+		self.Parent.setTabsState(False)
 		self.editor = Editor('/etc/thrifty.targets', 0, self)
 		self.editor.show()
 
 	def enableEditorButton(self):
-		self.editTargets.setEnabled(True)
+		self.Parent.setTabsState(True)

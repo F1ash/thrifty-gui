@@ -24,11 +24,11 @@ class Editor(QMainWindow):
 		self.exit_.setStatusTip('Exit application')
 		self.connect(self.exit_, SIGNAL('triggered()'), self._close)
 
-		self.giveToPk = QAction(QIcon('/usr/share/thrifty/icons/exit.png'), '&to PKit', self)
-		self.giveToPk.setShortcut('Ctrl+P')
-		self.giveToPk.setStatusTip('Give package list to PackageKit for reinstall')
-		self.connect(self.giveToPk, SIGNAL('triggered()'), self.runPKit)
-		self.giveToPk.setEnabled(False)
+		self.giveToYum = QAction(QIcon('/usr/share/thrifty/icons/exit.png'), 'to &Yum', self)
+		self.giveToYum.setShortcut('Ctrl+Y')
+		self.giveToYum.setStatusTip('Give package list to Yum for reinstall')
+		self.connect(self.giveToYum, SIGNAL('triggered()'), self.runYum)
+		self.giveToYum.setEnabled(False)
 
 		menubar = self.menuBar()
 
@@ -36,12 +36,12 @@ class Editor(QMainWindow):
 		file_.addAction(self.save_)
 		file_.addAction(self.exit_)
 
-		toPK_ = menubar.addMenu('&Action')
-		toPK_.addAction(self.giveToPk)
+		toYum = menubar.addMenu('&Action')
+		toYum.addAction(self.giveToYum)
 
 		if task is not None :
 			self.save_.setEnabled(False)
-			if task : self.giveToPk.setEnabled(True)
+			if task : self.giveToYum.setEnabled(True)
 
 		self.editor = QTextEdit(parent = self)
 		self.setCentralWidget(self.editor)
@@ -68,15 +68,51 @@ class Editor(QMainWindow):
 					if len(chunks) >= task + 1 :
 						if chunks[task] != '' and chunks[task] not in l:
 							l.append(chunks[task])
-				s = ''.join([s_ + '\n' for s_ in l])
+				_s = [s_ + '\n' for s_ in l]
+				_s.sort()
+				s = ''.join(_s)
 		#print [s, QString().fromUtf8(s)]
 		self.editor.setPlainText(QString().fromUtf8(s))
 		self.statusBar.showMessage('Edit : ' + self.path)
 
-	def runPKit(self):
+	def runYum(self):
+		self.save_.setEnabled(False)
+		self.exit_.setEnabled(False)
+		self.giveToYum.setEnabled(False)
 		packageList = self.editor.toPlainText()
+		self.editor.clear()
+		self.editor.setReadOnly(True)
+		Data = QStringList()
+		Data.append('yum')
+		Data.append('-y')
+		Data.append('reinstall')
 		for item in packageList.split('\n') :
-			if item != '' : print [item]
+			if item != '' :
+				#print [item]
+				Data.append(item)
+		## run yum in dispatched process
+		self.y = QProcess()
+		self.y.readyReadStandardOutput.connect(self.appendOutputString)
+		self.y.readyReadStandardError.connect(self.appendErrorString)
+		self.y.finished.connect(self.showResult)
+		self.y.start('pkexec', Data)
+		if self.y.waitForStarted() :
+			#print self.y.state()
+			self.statusBar.showMessage('Yum runned...')
+		else :
+			self.showResult()
+
+	def appendOutputString(self):
+		output = self.y.readAllStandardOutput()
+		self.editor.append(QString().fromUtf8(output))
+
+	def appendErrorString(self):
+		error = self.y.readAllStandardError()
+		self.editor.append(QString().fromUtf8(error))
+
+	def showResult(self):
+		self.exit_.setEnabled(True)
+		self.statusBar.showMessage('Ready to exit.')
 
 	def _save(self):
 		text = self.editor.toPlainText()

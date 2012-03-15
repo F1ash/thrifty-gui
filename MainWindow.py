@@ -8,8 +8,6 @@ from Box import Box
 from thrifty import HELP
 import os
 
-STYLE = 'QIcon { height: 32px; width : 32px; }'
-
 class MainWindow(QMainWindow):
 	def __init__(self, parent = None):
 		QMainWindow.__init__(self, parent)
@@ -17,6 +15,8 @@ class MainWindow(QMainWindow):
 		#self.resize(450, 350)
 		self.setWindowTitle('Thrifty')
 		self.setWindowIcon(QIcon('/usr/share/thrifty/icons/sniper_soldier.png'))
+
+		self.Settings = QSettings('thrifty', 'thrifty')
 
 		self.exit_ = QAction(QIcon('/usr/share/thrifty/icons/exit.png'), '&Exit', self)
 		self.exit_.setShortcut('Ctrl+Q')
@@ -33,6 +33,27 @@ class MainWindow(QMainWindow):
 		self.stopProcess.setEnabled(False)
 		self.connect(self.stopProcess, SIGNAL('triggered()'), self.terminateRunningTask)
 
+		self.separator = QAction('', self)
+		self.separator.setSeparator(True)
+
+		self.checkMode = QAction('check file`s &mode', self)
+		self.checkMode.setCheckable(True)
+		value = str(self.Settings.value('checkFileMode', 'False').toString())
+		if value.lower() == 'true' :
+			self.checkMode.setChecked(True)
+		else :
+			self.checkMode.setChecked(False)
+		self.connect(self.checkMode, SIGNAL('changed()'), self.setCheckMode)
+
+		self.checkOwners = QAction('check  file`s &owners', self)
+		self.checkOwners.setCheckable(True)
+		value = str(self.Settings.value('checkFileOwners', 'False').toString())
+		if value.lower() == 'true' :
+			self.checkOwners.setChecked(True)
+		else :
+			self.checkOwners.setChecked(False)
+		self.connect(self.checkOwners, SIGNAL('changed()'), self.setCheckOwners)
+
 		self.statusBar = StatusBar(self)
 		self.setStatusBar(self.statusBar)
 
@@ -43,13 +64,25 @@ class MainWindow(QMainWindow):
 
 		set_ = menubar.addMenu('&Control')
 		set_.addAction(self.stopProcess)
+		set_.addAction(self.separator)
+		set_.addAction(self.checkMode)
+		set_.addAction(self.checkOwners)
 
 		help_ = menubar.addMenu('&Help')
 		help_.addAction(listHelp)
 
 		self.menuTab = Box(self)
 		self.setCentralWidget(self.menuTab)
-		self.setStyleSheet(STYLE)
+
+	def setCheckMode(self):
+		state = self.checkMode.isChecked()
+		print state
+		self.Settings.setValue('checkFileMode', state)
+
+	def setCheckOwners(self):
+		state = self.checkOwners.isChecked()
+		#print state
+		self.Settings.setValue('checkFileOwners', state)
 
 	def detectRunningTask(self):
 		name = 'Unknown'
@@ -69,11 +102,13 @@ class MainWindow(QMainWindow):
 
 	def terminateRunningTask(self):
 		name, obj = self.detectRunningTask()
-		print 'Terminated Task : %s' % name
+		#print 'Terminated Task : %s' % name
 		obj.t.terminate()
 
 	def showMSG(self, s = ''):
 		msg = ListingText(HELP if s=='' else s, self)
 		msg.exec_()
 
-	def _close(self): self.close()
+	def _close(self):
+		self.Settings.sync()
+		self.close()

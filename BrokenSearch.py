@@ -96,7 +96,14 @@ class Broken(QWidget):
 		Data.append('--user')
 		Data.append('root')
 		Data.append('/usr/share/thrifty/thrifty.py')
-		opt = ''.join(('G:', str(USER_UID), '/', str(USER_GID), '::', '-b'))
+		mode = '-b'
+		value = str(self.Parent.Parent.Settings.value('checkFileOwners', 'False').toString())
+		if value.lower() == 'true' :
+			mode += 'O'
+		value = str(self.Parent.Parent.Settings.value('checkFileMode', 'False').toString())
+		if value.lower() == 'true' :
+			mode += 'M'
+		opt = ''.join(('G:', str(USER_UID), '/', str(USER_GID), '::', mode))
 		Data.append(opt)
 		for i in xrange(self.dirList.count()) :
 			item_ = self.dirList.item(i)
@@ -107,7 +114,7 @@ class Broken(QWidget):
 		self.t.start('pkexec', Data)
 		if self.t.waitForStarted() :
 			self.runned = True
-			print self.t.state()
+			#print self.t.state()
 		else :
 			self.showResult()
 
@@ -134,11 +141,11 @@ class Broken(QWidget):
 		self.logIn.setText('<a href="%s">Log in $TEMP<a>' % pathToLog + '</a>')
 
 	def showTargetsList(self):
-		self.showTargets.setEnabled(False)
+		self.Parent.setTabsState(False)
 		path_ = '' if self.pathToLog is None else self.pathToLog
 		task = 0 if self.mode.currentIndex() else 1
 		self.editor = Editor(path_, 0, self, task)
 		self.editor.show()
 
 	def enableEditorButton(self):
-		self.showTargets.setEnabled(True)
+		self.Parent.setTabsState(True)
