@@ -1,5 +1,5 @@
 Name: thrifty-gui
-Version: 0.20
+Version: 0.25
 Release: 1%{?dist}
 Summary: Utility for archiving or cleaning "rpmdb-out" files
 Summary(ru): Утилита для архивирования и очистки "не-пакетных" файлов
@@ -15,11 +15,15 @@ BuildRequires: desktop-file-utils
 
 %description
 Thrifty GUI
-Utility for archiving or cleaning "rpmdb-out" files
+Utility for archiving or cleaning "rpmdb-out" files from specified
+catalogs. It can verify brocken "rpmdb" files in specified catalogs
+and reinstall broken packages in Yum.
 
 %description -l ru
 Thrifty GUI
-Утилита для архивирования и очистки "не-пакетных" файлов
+Утилита для архивирования и очистки "не-пакетных" файлов в заданных каталогах.
+Так же в заданных каталогах можно определять повреждённые пакетные файлы
+и переустанавливать их пакеты в Yum.
 
 %prep
 %setup -q
@@ -62,6 +66,9 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/thrifty.desktop
 rm -rf $RPM_BUILD_ROOT
 
 %changelog
+
+* Tue Mar 15 2012 Fl@sh <kaperang07@gmail.com> - 0.25-1
+- version updated
 
 * Tue Mar 13 2012 Fl@sh <kaperang07@gmail.com> - 0.20-1
 - version updated
