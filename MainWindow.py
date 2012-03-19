@@ -54,6 +54,15 @@ class MainWindow(QMainWindow):
 			self.checkOwners.setChecked(False)
 		self.connect(self.checkOwners, SIGNAL('changed()'), self.setCheckOwners)
 
+		self.checkMtime = QAction('check  file`s mt&ime', self)
+		self.checkMtime.setCheckable(True)
+		value = str(self.Settings.value('checkFileMtime', 'False').toString())
+		if value.lower() == 'true' :
+			self.checkMtime.setChecked(True)
+		else :
+			self.checkMtime.setChecked(False)
+		self.connect(self.checkMtime, SIGNAL('changed()'), self.setCheckMtime)
+
 		self.statusBar = StatusBar(self)
 		self.setStatusBar(self.statusBar)
 
@@ -67,6 +76,7 @@ class MainWindow(QMainWindow):
 		set_.addAction(self.separator)
 		set_.addAction(self.checkMode)
 		set_.addAction(self.checkOwners)
+		set_.addAction(self.checkMtime)
 
 		help_ = menubar.addMenu('&Help')
 		help_.addAction(listHelp)
@@ -84,8 +94,14 @@ class MainWindow(QMainWindow):
 		#print state
 		self.Settings.setValue('checkFileOwners', state)
 
+	def setCheckMtime(self):
+		state = self.checkMtime.isChecked()
+		#print state
+		self.Settings.setValue('checkFileMtime', state)
+
 	def detectRunningTask(self):
 		name = 'Unknown'
+		obj = None
 		if self.menuTab.checkFile.runned :
 			name = 'CheckFile'
 			obj = self.menuTab.checkFile
@@ -103,7 +119,7 @@ class MainWindow(QMainWindow):
 	def terminateRunningTask(self):
 		name, obj = self.detectRunningTask()
 		#print 'Terminated Task : %s' % name
-		obj.t.terminate()
+		if obj is not None : obj.t.terminate()
 
 	def showMSG(self, s = ''):
 		msg = ListingText(HELP if s=='' else s, self)

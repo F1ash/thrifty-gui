@@ -103,6 +103,9 @@ class Broken(QWidget):
 		value = str(self.Parent.Parent.Settings.value('checkFileMode', 'False').toString())
 		if value.lower() == 'true' :
 			mode += 'M'
+		value = str(self.Parent.Parent.Settings.value('checkFileMtime', 'False').toString())
+		if value.lower() == 'true' :
+			mode += 'T'
 		opt = ''.join(('G:', str(USER_UID), '/', str(USER_GID), '::', mode))
 		Data.append(opt)
 		for i in xrange(self.dirList.count()) :
