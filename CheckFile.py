@@ -94,7 +94,7 @@ class CheckFile(QWidget):
 		path = self.pathString.text().toUtf8().data()
 		if not os.access(path, os.R_OK) and mode == 1:
 			with open('/dev/shm/thrifty.lastTask', 'wb') as f :
-				f.write('package:Permissin denied.\nmulti:0')
+				f.write('package:Permissin denied or File not exist.\nmulti:0')
 			self.showResult()
 			return
 		self.t = QProcess()
@@ -114,6 +114,9 @@ class CheckFile(QWidget):
 
 	def setState(self, state):
 		self.pathString.setEnabled(state)
+		self.mode.setEnabled(state)
+		self.start.setEnabled(state)
+		self.otherData.setEnabled(state)
 		self.searchPath.setEnabled(state)
 		self.package.setEnabled(state)
 		self.packageCheckSumm.setEnabled(state)
