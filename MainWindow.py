@@ -6,6 +6,7 @@ from StatusBar import StatusBar
 from ListingText import ListingText
 from Box import Box
 from thrifty import HELP
+from Functions import prelinkInstalled
 import os
 
 class MainWindow(QMainWindow):
@@ -66,6 +67,17 @@ class MainWindow(QMainWindow):
 		self.statusBar = StatusBar(self)
 		self.setStatusBar(self.statusBar)
 
+		self.rebuild = QAction(QIcon('/usr/share/thrifty/icons/rebuild.png'), '&Rebuild RPMDB', self)
+		self.rebuild.setShortcut('Ctrl+R')
+		self.rebuild.setStatusTip('Rebuild RPMDB')
+		self.connect(self.rebuild, SIGNAL('triggered()'), self.rebuildRPM)
+
+		self.prelink = QAction(QIcon('/usr/share/thrifty/icons/prelink.png'), '&Prelink now', self)
+		self.prelink.setShortcut('Ctrl+P')
+		self.prelink.setStatusTip('Prelink now')
+		self.prelink.setEnabled(prelinkInstalled)
+		self.connect(self.prelink, SIGNAL('triggered()'), self.prelinkFiles)
+
 		menubar = self.menuBar()
 
 		file_ = menubar.addMenu('&File')
@@ -77,6 +89,10 @@ class MainWindow(QMainWindow):
 		set_.addAction(self.checkMode)
 		set_.addAction(self.checkOwners)
 		set_.addAction(self.checkMtime)
+
+		cmds_ = menubar.addMenu('Com&mands')
+		cmds_.addAction(self.rebuild)
+		cmds_.addAction(self.prelink)
 
 		help_ = menubar.addMenu('&Help')
 		help_.addAction(listHelp)
@@ -120,6 +136,12 @@ class MainWindow(QMainWindow):
 		name, obj = self.detectRunningTask()
 		#print 'Terminated Task : %s' % name
 		if obj is not None : obj.t.terminate()
+
+	def rebuildRPM(self):
+		print 'rebuild'
+
+	def prelinkFiles(self):
+		print 'prelink'
 
 	def showMSG(self, s = ''):
 		msg = ListingText(HELP if s=='' else s, self)

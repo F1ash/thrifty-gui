@@ -18,6 +18,7 @@ class CheckFile(QWidget):
 		QWidget.__init__(self, parent)
 		self.Parent = parent
 		self.runned = False
+		self.otherDataList = ['']
 
 		self.layout = QGridLayout()
 
@@ -49,7 +50,8 @@ class CheckFile(QWidget):
 
 		self.packageCheckSumm = QLabel('Package CheckSumm :')
 		self.checkSumm = QLabel('Real CheckSumm :')
-		self.packageRes = QLabel('')
+		self.packageRes = QComboBox()
+		self.packageRes.setSizeAdjustPolicy(QComboBox.AdjustToContents)
 		self.packageCheckSummRes = QLabel('')
 		self.checkSummRes = QLabel('')
 		self.otherData = QLabel('')
@@ -65,6 +67,7 @@ class CheckFile(QWidget):
 
 		self.setLayout(self.layout)
 		self.mode.currentIndexChanged.connect(self.changeMode)
+		self.packageRes.currentIndexChanged.connect(self.changePackageContent)
 		self.setMinimumSize(32, 32)
 
 	def changeMode(self, i = 0):
@@ -72,6 +75,11 @@ class CheckFile(QWidget):
 			self.mode.setToolTip('Root Mode')
 		else :
 			self.mode.setToolTip('User Mode')
+
+	def changePackageContent(self, i = 0):
+		self.otherData.setText(wrapData(self.otherDataList[i]))
+		self.checkSummRes.setText(self.otherDataList[i][13])
+		self.packageCheckSummRes.setText(self.otherDataList[i][14])
 
 	def addPath(self):
 		fileName = QFileDialog.getOpenFileName(self, 'Path_to_', '~')
@@ -86,10 +94,12 @@ class CheckFile(QWidget):
 	def checkFile(self):
 		self.Parent.setTabsState(False)
 		self.runned = True
-		self.packageRes.setText('')
+		self.packageRes.currentIndexChanged.disconnect(self.changePackageContent)
+		self.packageRes.clear()
 		self.packageCheckSummRes.setText('')
 		self.checkSummRes.setText('')
 		self.otherData.setText('')
+		self.otherDataList = [['' for i in xrange(12)] + ['0', '', '']]
 		mode = 0 if self.mode.currentIndex() else 1
 		path = self.pathString.text().toUtf8().data()
 		if not os.access(path, os.R_OK) and mode == 1:
@@ -119,6 +129,7 @@ class CheckFile(QWidget):
 		self.otherData.setEnabled(state)
 		self.searchPath.setEnabled(state)
 		self.package.setEnabled(state)
+		self.packageRes.setEnabled(state)
 		self.packageCheckSumm.setEnabled(state)
 		self.checkSumm.setEnabled(state)
 
@@ -128,45 +139,52 @@ class CheckFile(QWidget):
 		name_ = '/dev/shm/thrifty.lastTask'
 		if os.path.isfile(name_) :
 			with open(name_, 'rb') as f :
-				_data = f.read()
+				__data = f.read()
 			os.remove(name_)
-			data = _data.split('\n')
-			STR = ['' for i in xrange(13)]
-			for item in data :
-				_data = item.split(':')
-				if len(_data) > 1 :
-					if _data[0] == 'package' :
-						self.packageRes.setText(_data[1])
-					elif _data[0] == 'sizeR' :
-						STR[0] = _data[1]
-					elif _data[0] == 'sizeP' :
-						STR[1] = _data[1]
-					elif _data[0] == 'hashR' :
-						self.checkSummRes.setText(_data[1])
-					elif _data[0] == 'hashP' :
-						self.packageCheckSummRes.setText(_data[1])
-					elif _data[0] == 'modeR' :
-						STR[2] = _data[1]
-					elif _data[0] == 'modeP' :
-						STR[3] = _data[1]
-					elif _data[0] == 'uidR' :
-						STR[4] = _data[1]
-					elif _data[0] == 'uidP' :
-						STR[5] = _data[1]
-					elif _data[0] == 'gidR' :
-						STR[6] = _data[1]
-					elif _data[0] == 'gidP' :
-						STR[7] = _data[1]
-					elif _data[0] == 'mtimeR' :
-						STR[8] = _data[1]
-					elif _data[0] == 'mtimeP' :
-						STR[9] = _data[1]
-					elif _data[0] == 'linkR' :
-						STR[10] = _data[1]
-					elif _data[0] == 'linkP' :
-						STR[11] = _data[1]
-					elif _data[0] == 'multi' :
-						STR[12] = _data[1]
-			self.otherData.setText(wrapData(STR))
+			#print __data
+			self.otherDataList = []
+			for _data in __data.split('</package>\n') :
+				if _data != '' :
+					data = _data.split('\n')
+					STR = ['' for i in xrange(12)] + ['0', '', '']
+					for item in data :
+						_data = item.split(':')
+						if len(_data) > 1 :
+							if _data[0] == 'package' :
+								self.packageRes.addItem(_data[1])
+							elif _data[0] == 'sizeR' :
+								STR[0] = _data[1]
+							elif _data[0] == 'sizeP' :
+								STR[1] = _data[1]
+							elif _data[0] == 'modeR' :
+								STR[2] = _data[1]
+							elif _data[0] == 'modeP' :
+								STR[3] = _data[1]
+							elif _data[0] == 'uidR' :
+								STR[4] = _data[1]
+							elif _data[0] == 'uidP' :
+								STR[5] = _data[1]
+							elif _data[0] == 'gidR' :
+								STR[6] = _data[1]
+							elif _data[0] == 'gidP' :
+								STR[7] = _data[1]
+							elif _data[0] == 'mtimeR' :
+								STR[8] = _data[1]
+							elif _data[0] == 'mtimeP' :
+								STR[9] = _data[1]
+							elif _data[0] == 'linkR' :
+								STR[10] = _data[1]
+							elif _data[0] == 'linkP' :
+								STR[11] = _data[1]
+							elif _data[0] == 'multi' :
+								STR[12] = _data[1]
+							elif _data[0] == 'hashR' :
+								STR[13] = _data[1]
+							elif _data[0] == 'hashP' :
+								STR[14] = _data[1]
+					self.otherDataList.append(STR)
 		else :
-			self.packageRes.setText('Error : not successfull.')
+			self.packageRes.addItem('Error : not successfull.')
+		self.packageRes.currentIndexChanged.connect(self.changePackageContent)
+		#print self.otherDataList
+		self.packageRes.currentIndexChanged.emit(0)
