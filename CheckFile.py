@@ -8,8 +8,8 @@ import os, stat, os.path
 def wrapData(args):
 	return \
 	'<pre>RealData : PackageData\
-	<pre>Size: %s : %s<pre>Mode: %s : %s<pre>User: %s : %s<pre>Group: %s : %s<pre>Mtime: %s : %s' \
-	% (args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9]) + \
+	<pre>Size: %s : %s<pre>Mode: %s : %s<pre>     %s : %s<pre>User: %s : %s<pre>Group: %s : %s<pre>Mtime: %s : %s' \
+	% (args[0], args[1], args[2], args[3], args[15], args[16], args[4], args[5], args[6], args[7], args[8], args[9]) + \
 	('<pre>Link:\t%s<pre>\t%s' % (args[10], args[11]) if (args[10], args[11])!=('', '') else '') + \
 	('<pre>WARNING: not unique data in rpmDB (%s records)' % args[12] if int(args[12])>1 else '')
 
@@ -99,7 +99,7 @@ class CheckFile(QWidget):
 		self.packageCheckSummRes.setText('')
 		self.checkSummRes.setText('')
 		self.otherData.setText('')
-		self.otherDataList = [['' for i in xrange(12)] + ['0', '', '']]
+		self.otherDataList = [['' for i in xrange(12)] + ['0', '', '', '', '']]
 		mode = 0 if self.mode.currentIndex() else 1
 		path = self.pathString.text().toUtf8().data()
 		if not os.access(path, os.R_OK) and mode == 1:
@@ -146,7 +146,7 @@ class CheckFile(QWidget):
 			for _data in __data.split('</package>\n') :
 				if _data != '' :
 					data = _data.split('\n')
-					STR = ['' for i in xrange(12)] + ['0', '', '']
+					STR = ['' for i in xrange(12)] + ['0', '', '', '', '']
 					for item in data :
 						_data = item.split(':')
 						if len(_data) > 1 :
@@ -179,9 +179,15 @@ class CheckFile(QWidget):
 							elif _data[0] == 'multi' :
 								STR[12] = _data[1]
 							elif _data[0] == 'hashR' :
-								STR[13] = _data[1]
+								STR[13] = 'not prelinked, but in cache' \
+									if _data[1] == '256' \
+									else _data[1]
 							elif _data[0] == 'hashP' :
 								STR[14] = _data[1]
+							elif _data[0] == 'binModeR' :
+								STR[15] = _data[1]
+							elif _data[0] == 'binModeP' :
+								STR[16] = _data[1]
 					self.otherDataList.append(STR)
 		else :
 			self.packageRes.addItem('Error : not successfull.')
