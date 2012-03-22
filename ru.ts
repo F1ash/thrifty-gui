@@ -10,6 +10,11 @@
     </message>
     <message>
         <location filename="MainWindow.py" line="1271"/>
+        <source>Package :</source>
+        <translation>Пакет :</translation>
+    </message>
+    <message>
+        <location filename="MainWindow.py" line="1271"/>
         <source>&amp;Exit</source>
         <translation>Выйти</translation>
     </message>
