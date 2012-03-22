@@ -1,5 +1,5 @@
 Name: thrifty-gui
-Version: 0.27
+Version: 0.30
 Release: 1%{?dist}
 Summary: Utility for archiving or cleaning "rpmdb-out" files
 Summary(ru): Утилита для архивирования и очистки "не-пакетных" файлов
@@ -67,16 +67,19 @@ rm -rf $RPM_BUILD_ROOT
 
 %changelog
 
-* Tue Mar 19 2012 Fl@sh <kaperang07@gmail.com> - 0.27-1
+* Thu Mar 22 2012 Fl@sh <kaperang07@gmail.com> - 0.30-1
 - version updated
 
-* Tue Mar 15 2012 Fl@sh <kaperang07@gmail.com> - 0.25-1
+* Mon Mar 19 2012 Fl@sh <kaperang07@gmail.com> - 0.27-1
+- version updated
+
+* Thu Mar 15 2012 Fl@sh <kaperang07@gmail.com> - 0.25-1
 - version updated
 
 * Tue Mar 13 2012 Fl@sh <kaperang07@gmail.com> - 0.20-1
 - version updated
 
-* Tue Mar 07 2012 Fl@sh <kaperang07@gmail.com> - 0.15-1
+* Wed Mar 07 2012 Fl@sh <kaperang07@gmail.com> - 0.15-1
 - version updated
 
 * Tue Mar 06 2012 Fl@sh <kaperang07@gmail.com> - 0.10-1

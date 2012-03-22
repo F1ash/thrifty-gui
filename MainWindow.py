@@ -12,6 +12,7 @@ import os
 class MainWindow(QMainWindow):
 	def __init__(self, parent = None):
 		QMainWindow.__init__(self, parent)
+		self.runned = False
 
 		#self.resize(450, 350)
 		self.setWindowTitle('Thrifty')
@@ -67,20 +68,16 @@ class MainWindow(QMainWindow):
 		self.statusBar = StatusBar(self)
 		self.setStatusBar(self.statusBar)
 
-		self.rebuild = QAction(QIcon('/usr/share/thrifty/icons/rebuild.png'), '&Rebuild RPMDB', self)
-		self.rebuild.setShortcut('Ctrl+R')
-		self.rebuild.setStatusTip('Rebuild RPMDB')
-		self.connect(self.rebuild, SIGNAL('triggered()'), self.rebuildRPM)
-
 		self.prelink = QAction(QIcon('/usr/share/thrifty/icons/prelink.png'), '&Prelink now', self)
 		self.prelink.setShortcut('Ctrl+P')
 		self.prelink.setStatusTip('Prelink now')
 		self.prelink.setEnabled(prelinkInstalled)
-		self.connect(self.prelink, SIGNAL('triggered()'), self.prelinkFiles)
+		self.connect(self.prelink, SIGNAL('triggered()'), self.runPrelink)
 
 		menubar = self.menuBar()
 
 		file_ = menubar.addMenu('&File')
+		file_.addAction(self.prelink)
 		file_.addAction(self.exit_)
 
 		set_ = menubar.addMenu('&Control')
@@ -89,10 +86,6 @@ class MainWindow(QMainWindow):
 		set_.addAction(self.checkMode)
 		set_.addAction(self.checkOwners)
 		set_.addAction(self.checkMtime)
-
-		cmds_ = menubar.addMenu('Com&mands')
-		cmds_.addAction(self.rebuild)
-		cmds_.addAction(self.prelink)
 
 		help_ = menubar.addMenu('&Help')
 		help_.addAction(listHelp)
@@ -130,6 +123,9 @@ class MainWindow(QMainWindow):
 		elif self.menuTab.broken.runned :
 			name = 'Search Broken'
 			obj = self.menuTab.broken
+		elif self.runned :
+			name = 'Prelink'
+			obj = self
 		return name, obj
 
 	def terminateRunningTask(self):
@@ -137,11 +133,28 @@ class MainWindow(QMainWindow):
 		#print 'Terminated Task : %s' % name
 		if obj is not None : obj.t.terminate()
 
-	def rebuildRPM(self):
-		print 'rebuild'
+	def runPrelink(self):
+		self.prelink.setEnabled(False)
+		self.menuTab.setTabsState(False)
+		#self.progress.show()
+		self.runned = True
+		print 'Prelink running  ...'
+		self.t = QProcess()
+		Data = QStringList()
+		Data.append('prelink')
+		Data.append('-a')
+		self.t.finished.connect(self.showResult)
+		self.t.start('pkexec', Data)
+		if self.t.waitForStarted() :
+			self.runned = True
+			#print self.t.state()
+		else :
+			self.showResult()
 
-	def prelinkFiles(self):
-		print 'prelink'
+	def showResult(self):
+		self.prelink.setEnabled(True)
+		self.runned = False
+		self.menuTab.setTabsState(True)
 
 	def showMSG(self, s = ''):
 		msg = ListingText(HELP if s=='' else s, self)
