@@ -3,6 +3,7 @@
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from Editor import Editor
+from Translator import Translator
 from Functions import USER_UID, USER_GID
 import os, os.path
 
@@ -10,6 +11,7 @@ class Broken(QWidget):
 	def __init__(self, parent = None):
 		QWidget.__init__(self, parent)
 		self.Parent = parent
+		self.tr = Translator('Thrifty')
 		self.runned = False
 		self.pathToLog = None
 
@@ -18,7 +20,7 @@ class Broken(QWidget):
 
 		self.dirList = QListWidget()
 		#self.dirList.setMaximumHeight(150)
-		self.dirList.setToolTip('A list of directories processed')
+		self.dirList.setToolTip(self.tr._translate('A list of directories processed'))
 
 		self.buttonLayout = QVBoxLayout()
 		self.buttonLayout.setAlignment(Qt.AlignCenter)
@@ -30,15 +32,15 @@ class Broken(QWidget):
 		self.showTargets.setIconSize(QSize(32,32))
 		self.mode = QComboBox()
 		self.mode.setIconSize(QSize(32,32))
-		self.mode.setToolTip('Packages')
+		self.mode.setToolTip(self.tr._translate('Packages'))
 		self.mode.addItem (QIcon('/usr/share/thrifty/icons/packages.png'), '')
 		self.mode.addItem (QIcon('/usr/share/thrifty/icons/files.png'), '')
 		self.start = QPushButton(QIcon('/usr/share/thrifty/icons/start.png'), '')
 		self.start.setIconSize(QSize(32,32))
-		self.addPath.setToolTip('Add to List')
-		self.delPath.setToolTip('Delete from List')
-		self.showTargets.setToolTip('show Targets file')
-		self.start.setToolTip('Start task')
+		self.addPath.setToolTip(self.tr._translate('Add to List'))
+		self.delPath.setToolTip(self.tr._translate('Delete from List'))
+		self.showTargets.setToolTip(self.tr._translate('show Targets file'))
+		self.start.setToolTip(self.tr._translate('Start task'))
 		self.addPath.clicked.connect(self.addDirPath)
 		self.delPath.clicked.connect(self.delDirPath)
 		self.showTargets.clicked.connect(self.showTargetsList)
@@ -56,7 +58,7 @@ class Broken(QWidget):
 		self.progress.setRange(0, 0)
 
 		self.logIn = QLabel('')
-		self.logIn.setToolTip('Log of processed task')
+		self.logIn.setToolTip(self.tr._translate('Log of processed task'))
 		self.logIn.setOpenExternalLinks(True)
 
 		self.layout.addWidget(self.dirList, 0, 0)
@@ -68,22 +70,22 @@ class Broken(QWidget):
 		self.mode.currentIndexChanged.connect(self.changeModeContent)
 
 	def addDirPath(self):
-		_nameDir = QFileDialog.getExistingDirectory(self, 'Path_to_', '~', QFileDialog.ShowDirsOnly)
+		_nameDir = QFileDialog.getExistingDirectory(self, self.tr._translate('Path_to_'), '~', QFileDialog.ShowDirsOnly)
 		nameDir = _nameDir.toLocal8Bit().data()
 		if os.path.isdir(nameDir) and \
 				os.access(nameDir, os.R_OK) and os.access(nameDir, os.X_OK) :
 			self.dirList.addItem(_nameDir)
 		else :
-			msg = QMessageBox.information(self, 'ERROR', 'error', QMessageBox.Ok)
+			msg = QMessageBox.information(self, 'ERROR', self.tr._translate('error'), QMessageBox.Ok)
 
 	def delDirPath(self):
 		item = self.dirList.takeItem(self.dirList.currentRow())
 
 	def changeModeContent(self, i = 0):
 		if i :
-			self.mode.setToolTip('Files')
+			self.mode.setToolTip(self.tr._translate('Files'))
 		else :
-			self.mode.setToolTip('Packages')
+			self.mode.setToolTip(self.tr._translate('Packages'))
 
 	def runSearchBroken(self):
 		self.Parent.setTabsState(False)

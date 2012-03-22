@@ -7,38 +7,40 @@ from ListingText import ListingText
 from Box import Box
 from thrifty import HELP
 from Functions import prelinkInstalled
+from Translator import Translator
 import os
 
 class MainWindow(QMainWindow):
 	def __init__(self, parent = None):
 		QMainWindow.__init__(self, parent)
 		self.runned = False
+		self.tr = Translator('Thrifty')
 
 		#self.resize(450, 350)
-		self.setWindowTitle('Thrifty')
+		self.setWindowTitle(self.tr._translate('Thrifty'))
 		self.setWindowIcon(QIcon('/usr/share/thrifty/icons/sniper_soldier.png'))
 
 		self.Settings = QSettings('thrifty', 'thrifty')
 
-		self.exit_ = QAction(QIcon('/usr/share/thrifty/icons/exit.png'), '&Exit', self)
+		self.exit_ = QAction(QIcon('/usr/share/thrifty/icons/exit.png'), self.tr._translate('&Exit'), self)
 		self.exit_.setShortcut('Ctrl+Q')
-		self.exit_.setStatusTip('Exit application')
+		self.exit_.setStatusTip(self.tr._translate('Exit application'))
 		self.connect(self.exit_, SIGNAL('triggered()'), self._close)
 
-		listHelp = QAction(QIcon('/usr/share/thrifty/icons/help.png'),'&About Thrifty', self)
-		listHelp.setStatusTip('Read help')
+		listHelp = QAction(QIcon('/usr/share/thrifty/icons/help.png'), self.tr._translate('&About Thrifty'), self)
+		listHelp.setStatusTip(self.tr._translate('Read help'))
 		self.connect(listHelp, SIGNAL('triggered()'), self.showMSG)
 
-		self.stopProcess = QAction(QIcon('/usr/share/thrifty/icons/terminate.png'),'&Terminate Task', self)
+		self.stopProcess = QAction(QIcon('/usr/share/thrifty/icons/terminate.png'), self.tr._translate('&Terminate Task'), self)
 		self.stopProcess.setShortcut('Ctrl+T')
-		self.stopProcess.setStatusTip('Terminate running task ...')
+		self.stopProcess.setStatusTip(self.tr._translate('Terminate running task ...'))
 		self.stopProcess.setEnabled(False)
 		self.connect(self.stopProcess, SIGNAL('triggered()'), self.terminateRunningTask)
 
 		self.separator = QAction('', self)
 		self.separator.setSeparator(True)
 
-		self.checkMode = QAction('check file`s &mode', self)
+		self.checkMode = QAction(self.tr._translate('check file`s &mode'), self)
 		self.checkMode.setCheckable(True)
 		value = str(self.Settings.value('checkFileMode', 'False').toString())
 		if value.lower() == 'true' :
@@ -47,7 +49,7 @@ class MainWindow(QMainWindow):
 			self.checkMode.setChecked(False)
 		self.connect(self.checkMode, SIGNAL('changed()'), self.setCheckMode)
 
-		self.checkOwners = QAction('check  file`s &owners', self)
+		self.checkOwners = QAction(self.tr._translate('check  file`s &owners'), self)
 		self.checkOwners.setCheckable(True)
 		value = str(self.Settings.value('checkFileOwners', 'False').toString())
 		if value.lower() == 'true' :
@@ -56,7 +58,7 @@ class MainWindow(QMainWindow):
 			self.checkOwners.setChecked(False)
 		self.connect(self.checkOwners, SIGNAL('changed()'), self.setCheckOwners)
 
-		self.checkMtime = QAction('check  file`s mt&ime', self)
+		self.checkMtime = QAction(self.tr._translate('check  file`s mt&ime'), self)
 		self.checkMtime.setCheckable(True)
 		value = str(self.Settings.value('checkFileMtime', 'False').toString())
 		if value.lower() == 'true' :
@@ -68,26 +70,26 @@ class MainWindow(QMainWindow):
 		self.statusBar = StatusBar(self)
 		self.setStatusBar(self.statusBar)
 
-		self.prelink = QAction(QIcon('/usr/share/thrifty/icons/prelink.png'), '&Prelink now', self)
+		self.prelink = QAction(QIcon('/usr/share/thrifty/icons/prelink.png'), self.tr._translate('&Prelink'), self)
 		self.prelink.setShortcut('Ctrl+P')
-		self.prelink.setStatusTip('Prelink now')
+		self.prelink.setStatusTip(self.tr._translate('Prelink now'))
 		self.prelink.setEnabled(prelinkInstalled)
 		self.connect(self.prelink, SIGNAL('triggered()'), self.runPrelink)
 
 		menubar = self.menuBar()
 
-		file_ = menubar.addMenu('&File')
+		file_ = menubar.addMenu(self.tr._translate('&File'))
 		file_.addAction(self.prelink)
 		file_.addAction(self.exit_)
 
-		set_ = menubar.addMenu('&Control')
+		set_ = menubar.addMenu(self.tr._translate('&Control'))
 		set_.addAction(self.stopProcess)
 		set_.addAction(self.separator)
 		set_.addAction(self.checkMode)
 		set_.addAction(self.checkOwners)
 		set_.addAction(self.checkMtime)
 
-		help_ = menubar.addMenu('&Help')
+		help_ = menubar.addMenu(self.tr._translate('&Help'))
 		help_.addAction(listHelp)
 
 		self.menuTab = Box(self)

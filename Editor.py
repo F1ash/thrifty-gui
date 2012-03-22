@@ -3,40 +3,42 @@
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from StatusBar import StatusBar
+from Translator import Translator
 from Functions import randomString, readFile, USER_UID, USER_GID
 import os, os.path
 
 class Editor(QMainWindow):
 	def __init__(self, path = '', mode = 1, parent = None, task = None):
 		QMainWindow.__init__(self, parent)
+		self.tr = Translator('Thrifty')
 
 		#self.resize(450, 350)
-		self.setWindowTitle('ThriftyEditor')
+		self.setWindowTitle(self.tr._translate('Thrifty'))
 		self.setWindowIcon(QIcon('/usr/share/thrifty/icons/sniper_soldier.png'))
 
-		self.save_ = QAction(QIcon('/usr/share/thrifty/icons/save.png'), '&Save', self)
+		self.save_ = QAction(QIcon('/usr/share/thrifty/icons/save.png'), self.tr._translate('&Save'), self)
 		self.save_.setShortcut('Ctrl+S')
-		self.save_.setStatusTip('Save file')
+		self.save_.setStatusTip(self.tr._translate('Save file'))
 		self.connect(self.save_, SIGNAL('triggered()'), self._save)
 
-		self.exit_ = QAction(QIcon('/usr/share/thrifty/icons/exit.png'), '&Exit', self)
+		self.exit_ = QAction(QIcon('/usr/share/thrifty/icons/exit.png'), self.tr._translate('&Exit'), self)
 		self.exit_.setShortcut('Ctrl+Q')
-		self.exit_.setStatusTip('Exit application')
+		self.exit_.setStatusTip(self.tr._translate('Exit application'))
 		self.connect(self.exit_, SIGNAL('triggered()'), self._close)
 
-		self.giveToYum = QAction(QIcon('/usr/share/thrifty/icons/exit.png'), 'to &Yum', self)
+		self.giveToYum = QAction(QIcon('/usr/share/thrifty/icons/exit.png'), self.tr._translate('to &Yum'), self)
 		self.giveToYum.setShortcut('Ctrl+Y')
-		self.giveToYum.setStatusTip('Give package list to Yum for reinstall')
+		self.giveToYum.setStatusTip(self.tr._translate('Give package list to Yum for reinstall'))
 		self.connect(self.giveToYum, SIGNAL('triggered()'), self.runYum)
 		self.giveToYum.setEnabled(False)
 
 		menubar = self.menuBar()
 
-		file_ = menubar.addMenu('&File')
+		file_ = menubar.addMenu(self.tr._translate('&File'))
 		file_.addAction(self.save_)
 		file_.addAction(self.exit_)
 
-		toYum = menubar.addMenu('&Action')
+		toYum = menubar.addMenu(self.tr._translate('&Action'))
 		toYum.addAction(self.giveToYum)
 
 		if task is not None :
@@ -98,7 +100,7 @@ class Editor(QMainWindow):
 		self.y.start('pkexec', Data)
 		if self.y.waitForStarted() :
 			#print self.y.state()
-			self.statusBar.showMessage('Yum runned...')
+			self.statusBar.showMessage(self.tr._translate('Yum runned...'))
 		else :
 			self.showResult()
 
@@ -112,7 +114,7 @@ class Editor(QMainWindow):
 
 	def showResult(self):
 		self.exit_.setEnabled(True)
-		self.statusBar.showMessage('Ready to exit.')
+		self.statusBar.showMessage(self.tr._translate('Ready to exit.'))
 
 	def _save(self):
 		text = self.editor.toPlainText()
@@ -141,7 +143,7 @@ class Editor(QMainWindow):
 				self.showExitCode()
 
 	def showExitCode(self):
-		self.statusBar.showMessage('Exit code: ' + str(self.s.exitCode()))
+		self.statusBar.showMessage(self.tr._translate('Exit code: ') + str(self.s.exitCode()))
 
 	def _close(self):
 		self.Parent.enableEditorButton()

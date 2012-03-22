@@ -1,5 +1,5 @@
 Name: thrifty-gui
-Version: 0.30
+Version: 1.0
 Release: 1%{?dist}
 Summary: Utility for archiving or cleaning "rpmdb-out" files
 Summary(ru): Утилита для архивирования и очистки "не-пакетных" файлов
@@ -36,6 +36,7 @@ mkdir -p $RPM_BUILD_ROOT/%{_datadir}/thrifty/
 mkdir -p $RPM_BUILD_ROOT/%{_datadir}/thrifty/icons/
 install -D -m 755 -p %{name} $RPM_BUILD_ROOT/%{_bindir}/%{name}
 install -D -m 644 -p *.py $RPM_BUILD_ROOT/%{_datadir}/thrifty/
+install -D -m 644 -p ru.qm $RPM_BUILD_ROOT/%{_datadir}/thrifty/
 install -D -m 644 -p icons/* $RPM_BUILD_ROOT/%{_datadir}/thrifty/icons/
 install -D -m 644 -p icons/gas_soldier.png $RPM_BUILD_ROOT/%{_datadir}/pixmaps/thrifty.png
 
@@ -58,7 +59,9 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/thrifty.desktop
 %{_datadir}/thrifty/StatusBar.py*
 %{_datadir}/thrifty/BrokenSearch.py*
 %{_datadir}/thrifty/saveHelper.py*
+%{_datadir}/thrifty/Translator.py*
 %{_datadir}/thrifty/%{name}.py*
+%{_datadir}/thrifty/ru.qm
 %{_datadir}/applications/thrifty.desktop
 %{_datadir}/pixmaps/thrifty.png
 
@@ -66,6 +69,10 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/thrifty.desktop
 rm -rf $RPM_BUILD_ROOT
 
 %changelog
+
+* Thu Mar 22 2012 Fl@sh <kaperang07@gmail.com> - 1.0-1
+- fixed for Translator
+- version updated
 
 * Thu Mar 22 2012 Fl@sh <kaperang07@gmail.com> - 0.30-1
 - version updated

@@ -3,28 +3,36 @@
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from Editor import Editor
+from Translator import Translator
 from Functions import USER_UID, USER_GID
 import os.path
 
 SPEED = {0	: 2, 1	: 1, 2	: 0, 3	: 3}
 
-USER_DESCRIPTION = \
-'<pre><font color=green><b>UserMode</b></font> backs up own $HOME only\
-<pre>\twithout Excludes path.'
-ROOT_DESCRIPTION = \
-'<pre><font color=red><b>RootMode</b></font> backs up catalogs:\
-<pre>\t/usr/local\
+def USER_DESCRIPTION(chunk0, chunk1):
+	return \
+'<pre><font color=green><b>UserMode</b></font> ' + chunk0 + \
+'<pre>\t' + chunk1
+
+def ROOT_DESCRIPTION(chunk0, chunk1, chunk2):
+	return \
+'<pre><font color=red><b>RootMode</b></font> ' + chunk0 + \
+'<pre>\t/usr/local\
 <pre>\t/var/named/chroot\
 <pre>\t/etc\
-<pre>\t&lt;all real $HOMEs in system&gt;\
-<pre>\twithout Excludes path.\
-'
+<pre>\t&lt;' + chunk1 + '&gt;\
+<pre>\t' + chunk2
 
 class BackUp(QWidget):
 	def __init__(self, parent = None):
 		QWidget.__init__(self, parent)
 		self.Parent = parent
+		self.tr = Translator('Thrifty')
 		self.runned = False
+		self.trChunk0 = self.tr._translate('backs up own $HOME only')
+		self.trChunk1 = self.tr._translate('without Excludes path.')
+		self.trChunk2 = self.tr._translate('backs up catalogs:')
+		self.trChunk3 = self.tr._translate('all real $HOMEs in system')
 
 		self.layout = QGridLayout()
 		self.layout.setAlignment(Qt.AlignLeft)
@@ -36,7 +44,7 @@ class BackUp(QWidget):
 		#self.mode.addItems(QStringList() << 'User' << 'Root')
 		self.mode.addItem (QIcon('/usr/share/thrifty/icons/user.png'), '')
 		self.mode.addItem (QIcon('/usr/share/thrifty/icons/admin.png'), '')
-		self.mode.setToolTip('User Mode')
+		self.mode.setToolTip(self.tr._translate('User Mode'))
 		self.speed = QComboBox()
 		self.speed.setIconSize(QSize(32,32))
 		#self.speed.addItems(QStringList() << 'Slow' << 'Normal' << 'Fast' << 'Fast+')
@@ -44,22 +52,22 @@ class BackUp(QWidget):
 		self.speed.addItem (QIcon('/usr/share/thrifty/icons/normal.png'), '')
 		self.speed.addItem (QIcon('/usr/share/thrifty/icons/fast.png'), '')
 		self.speed.addItem (QIcon('/usr/share/thrifty/icons/fast+.png'), '')
-		self.speed.setToolTip('Slow')
+		self.speed.setToolTip(self.tr._translate('Slow'))
 		self.editExcludes = QPushButton(QIcon('/usr/share/thrifty/icons/edit.png'), '')
 		self.editExcludes.setIconSize(QSize(32,32))
-		self.editExcludes.setToolTip('Edit Excludes file for current regime')
+		self.editExcludes.setToolTip(self.tr._translate('Edit Excludes file for current regime'))
 		self.editExcludes.clicked.connect(self.editExcludesFile)
 		self.start = QPushButton(QIcon('/usr/share/thrifty/icons/start.png'), '')
 		self.start.setIconSize(QSize(32,32))
 		self.start.clicked.connect(self.runBackUp)
-		self.start.setToolTip('Start task')
+		self.start.setToolTip(self.tr._translate('Start task'))
 
 		self.buttonLayout.addWidget(self.mode)
 		self.buttonLayout.addWidget(self.speed)
 		self.buttonLayout.addWidget(self.editExcludes)
 		self.buttonLayout.addWidget(self.start)
 
-		self.descriptionTask = QLabel(USER_DESCRIPTION)
+		self.descriptionTask = QLabel('')
 		self.descriptionTask.setAlignment(Qt.AlignLeft)
 
 		self.progress = QProgressBar()
@@ -68,7 +76,7 @@ class BackUp(QWidget):
 		self.progress.setRange(0, 0)
 
 		self.logIn = QLabel('')
-		self.logIn.setToolTip('Log of processed task')
+		self.logIn.setToolTip(self.tr._translate('Log of processed task'))
 		self.logIn.setOpenExternalLinks(True)
 
 		self.layout.addItem(self.buttonLayout, 0, 0)
@@ -79,26 +87,31 @@ class BackUp(QWidget):
 		self.setLayout(self.layout)
 		self.mode.currentIndexChanged.connect(self.changeModeContent)
 		self.speed.currentIndexChanged.connect(self.changeSpeedContent)
+		self.mode.currentIndexChanged.emit(0)
 
 	def changeModeContent(self, i = 0):
 		if i :
-			self.mode.setToolTip('Root Mode')
-			self.descriptionTask.setText(ROOT_DESCRIPTION)
-			self.editExcludes.setToolTip('Edit Excludes file for <font color=red><b>ROOT</b></font> mode')
+			self.mode.setToolTip(self.tr._translate('Root Mode'))
+			self.descriptionTask.setText(ROOT_DESCRIPTION(self.trChunk2, self.trChunk3, self.trChunk1))
+			self.editExcludes.setToolTip(self.tr._translate('Edit Excludes file for ') + \
+					'<font color=red><b>ROOT</b></font> ' + \
+					self.tr._translate('mode'))
 		else :
-			self.mode.setToolTip('User Mode')
-			self.descriptionTask.setText(USER_DESCRIPTION)
-			self.editExcludes.setToolTip('Edit Excludes file for <font color=green><b>USER</b></font> mode')
+			self.mode.setToolTip(self.tr._translate('User Mode'))
+			self.descriptionTask.setText(USER_DESCRIPTION(self.trChunk0, self.trChunk1))
+			self.editExcludes.setToolTip(self.tr._translate('Edit Excludes file for ') + \
+					'<font color=green><b>USER</b></font> ' + \
+					self.tr._translate('mode'))
 
 	def changeSpeedContent(self, i = 0):
 		if i == 3 :
-			self.speed.setToolTip('Fast+')
+			self.speed.setToolTip(self.tr._translate('Fast+'))
 		elif i == 2 :
-			self.speed.setToolTip('Fast')
+			self.speed.setToolTip(self.tr._translate('Fast'))
 		elif i == 1 :
-			self.speed.setToolTip('Normal')
+			self.speed.setToolTip(self.tr._translate('Normal'))
 		else :
-			self.speed.setToolTip('Slow')
+			self.speed.setToolTip(self.tr._translate('Slow'))
 
 	def runBackUp(self):
 		self.Parent.setTabsState(False)

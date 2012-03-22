@@ -3,6 +3,7 @@
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from Editor import Editor
+from Translator import Translator
 from Functions import USER_UID, USER_GID
 import os, os.path
 
@@ -10,6 +11,7 @@ class CleanUp(QWidget):
 	def __init__(self, parent = None):
 		QWidget.__init__(self, parent)
 		self.Parent = parent
+		self.tr = Translator('Thrifty')
 		self.runned = False
 
 		self.layout = QGridLayout()
@@ -17,7 +19,7 @@ class CleanUp(QWidget):
 
 		self.dirList = QListWidget()
 		#self.dirList.setMaximumHeight(150)
-		self.dirList.setToolTip('A list of directories processed')
+		self.dirList.setToolTip(self.tr._translate('A list of directories processed'))
 
 		self.buttonLayout = QVBoxLayout()
 		self.buttonLayout.setAlignment(Qt.AlignCenter)
@@ -29,16 +31,16 @@ class CleanUp(QWidget):
 		self.editTargets.setIconSize(QSize(32,32))
 		self.mode = QComboBox()
 		self.mode.setIconSize(QSize(32,32))
-		self.mode.setToolTip('Test')
+		self.mode.setToolTip(self.tr._translate('Test'))
 		#self.mode.addItems(QStringList() << 'Test' << 'Clean')
 		self.mode.addItem (QIcon('/usr/share/thrifty/icons/test.png'), '')
 		self.mode.addItem (QIcon('/usr/share/thrifty/icons/cleanup.png'), '')
 		self.start = QPushButton(QIcon('/usr/share/thrifty/icons/start.png'), '')
 		self.start.setIconSize(QSize(32,32))
-		self.addPath.setToolTip('Add to List')
-		self.delPath.setToolTip('Delete from List')
-		self.editTargets.setToolTip('Edit Targets file')
-		self.start.setToolTip('Start task')
+		self.addPath.setToolTip(self.tr._translate('Add to List'))
+		self.delPath.setToolTip(self.tr._translate('Delete from List'))
+		self.editTargets.setToolTip(self.tr._translate('Edit Targets file'))
+		self.start.setToolTip(self.tr._translate('Start task'))
 		self.addPath.clicked.connect(self.addDirPath)
 		self.delPath.clicked.connect(self.delDirPath)
 		self.editTargets.clicked.connect(self.editTargetsFile)
@@ -56,7 +58,7 @@ class CleanUp(QWidget):
 		self.progress.setRange(0, 0)
 
 		self.logIn = QLabel('')
-		self.logIn.setToolTip('Log of processed task')
+		self.logIn.setToolTip(self.tr._translate('Log of processed task'))
 		self.logIn.setOpenExternalLinks(True)
 
 		self.layout.addWidget(self.dirList, 0, 0)
@@ -68,22 +70,22 @@ class CleanUp(QWidget):
 		self.mode.currentIndexChanged.connect(self.changeModeContent)
 
 	def addDirPath(self):
-		_nameDir = QFileDialog.getExistingDirectory(self, 'Path_to_', '~', QFileDialog.ShowDirsOnly)
+		_nameDir = QFileDialog.getExistingDirectory(self, self.tr._translate('Path_to_'), '~', QFileDialog.ShowDirsOnly)
 		nameDir = _nameDir.toLocal8Bit().data()
 		if os.path.isdir(nameDir) and \
 				os.access(nameDir, os.R_OK) and os.access(nameDir, os.X_OK) :
 			self.dirList.addItem(_nameDir)
 		else :
-			msg = QMessageBox.information(self, 'ERROR', 'error', QMessageBox.Ok)
+			msg = QMessageBox.information(self, 'ERROR', self.tr._translate('error'), QMessageBox.Ok)
 
 	def delDirPath(self):
 		item = self.dirList.takeItem(self.dirList.currentRow())
 
 	def changeModeContent(self, i = 0):
 		if i :
-			self.mode.setToolTip('Clean')
+			self.mode.setToolTip(self.tr._translate('Clean'))
 		else :
-			self.mode.setToolTip('Test')
+			self.mode.setToolTip(self.tr._translate('Test'))
 
 	def runCleanUp(self):
 		self.Parent.setTabsState(False)
@@ -131,7 +133,7 @@ class CleanUp(QWidget):
 		else :
 			pathToLog_ = 'ERROR'
 		pathToLog = pathToLog_.split('\n')
-		self.logIn.setText('Removed %s files; Released %s Byte(s)' % \
+		self.logIn.setText(self.tr._translate('Removed %s files; Released %s Byte(s)') % \
 						   ('0' if len(pathToLog) < 2 else pathToLog[1], \
 						   '0' if len(pathToLog) < 3 else pathToLog[2]) + \
 						   '; <a href="%s">Log in $TEMP<a>' % pathToLog[0] + '</a>')
