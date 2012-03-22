@@ -142,9 +142,14 @@ class CheckFile(QWidget):
 				__data = f.read()
 			os.remove(name_)
 			#print __data
-			self.otherDataList = []
-			for _data in __data.split('</package>\n') :
-				if _data != '' :
+			chunks = __data.split('</package>\n')
+			empty = chunks.count('')
+			for i in xrange(empty) : chunks.remove('')
+			if len(chunks)<1 :
+				self.packageRes.addItem('Not packaged')
+			else :
+				self.otherDataList = []
+				for _data in chunks :
 					data = _data.split('\n')
 					STR = ['' for i in xrange(12)] + ['0', '', '', '', '']
 					for item in data :
