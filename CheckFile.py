@@ -108,7 +108,8 @@ class CheckFile(QWidget):
 		path = self.pathString.text().toUtf8().data()
 		if not os.access(path, os.R_OK) and mode == 1:
 			with open('/dev/shm/thrifty.lastTask', 'wb') as f :
-				f.write(self.tr._translate('package:Permissin denied or File not exist.\nmulti:0'))
+				message = self.tr._translate('Permission denied or File not exist.')
+				f.write('package:' + message.toUtf8() + '\nmulti:0')
 			self.showResult()
 			return
 		self.t = QProcess()
@@ -162,7 +163,7 @@ class CheckFile(QWidget):
 						_data = item.split(':')
 						if len(_data) > 1 :
 							if _data[0] == 'package' :
-								self.packageRes.addItem(_data[1])
+								self.packageRes.addItem(_data[1].decode('utf-8'))
 							elif _data[0] == 'sizeR' :
 								STR[0] = _data[1]
 							elif _data[0] == 'sizeP' :

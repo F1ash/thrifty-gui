@@ -172,8 +172,8 @@
     </message>
     <message>
         <location filename="CheckFile.py" line="1271"/>
-        <source>package:Permissin denied or File not exist.\nmulti:0</source>
-        <translation>package:Нет прав или файл не существует.\nmulti:0</translation>
+        <source>Permission denied or File not exist.</source>
+        <translation>Нет прав или файл не существует.</translation>
     </message>
     <message>
         <location filename="CheckFile.py" line="1271"/>
