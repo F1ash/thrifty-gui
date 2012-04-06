@@ -133,10 +133,11 @@ class CleanUp(QWidget):
 		else :
 			pathToLog_ = 'ERROR'
 		pathToLog = pathToLog_.split('\n')
-		self.logIn.setText(self.tr._translate('Removed %s files; Released %s Byte(s)') % \
-						   ('0' if len(pathToLog) < 2 else pathToLog[1], \
-						   '0' if len(pathToLog) < 3 else pathToLog[2]) + \
-						   '; <a href="%s">Log in $TEMP<a>' % pathToLog[0] + '</a>')
+		chunk1 = '0' if len(pathToLog) < 2 else pathToLog[1]
+		chunk2 = '0' if len(pathToLog) < 3 else pathToLog[2]
+		_text = self.tr._translate('Removed %1 files; Released %2 Byte(s)').arg(chunk1).arg(chunk2)
+		text = _text + '; <a href="%s">Log in $TEMP<a>' % pathToLog[0] + '</a>'
+		self.logIn.setText(text)
 
 	def editTargetsFile(self):
 		self.Parent.setTabsState(False)
